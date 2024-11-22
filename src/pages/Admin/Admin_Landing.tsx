@@ -6,9 +6,21 @@ const Admin_Landing: React.FC = () => {
   return (
     <div>
       <Landing_Header/>
-      <Dashboard_Bar/>
-      <h1>Admin Home</h1>
-      <p>Welcome to your dashboard!</p>
+      <Dashboard_Bar title="Overview" ></Dashboard_Bar>
+      <h1
+        style={{
+          textAlign: "center",
+        }}
+      >
+        Admin Home
+      </h1>
+      <p
+        style= {{
+          textAlign:"center",
+        }}
+      >
+        Work in progress
+      </p>
     </div>
   );
 };
