@@ -15,7 +15,7 @@ const Profile_Button: React.FC = () => {
                 height: "60px",
                 borderRadius: "50%",
                 backgroundColor: "#D9D9D9",
-                border: "none",
+                border: "5px",
                 cursor: "pointer",
                 display: "flex",
                 justifyContent: "center",
@@ -25,7 +25,15 @@ const Profile_Button: React.FC = () => {
                 right: "30px",
             }}
         >
-        
+        <img
+            src= "src\assets\images\image 3.png"
+            alt= "Profile"
+            style={{
+                width: "125%",
+                height: "125%",
+                objectFit: "contain",
+            }}
+        />
         </button>
         </div>
     )
