@@ -1,18 +1,18 @@
 import React from "react";
 import Logo from "./Logo";
-import Profile_Button from "./Profile_Button" 
-import Notification_Button from "./Notification_Button" 
+import Profile_Button from "./Profile_Button";
+import Notification_Button from "./Notification_Button";
 
 const Landing_Header: React.FC = () => {
   return (
     <div
-        style={{
-            display: "flex"
-        }}
+      style={{
+        display: "flex",
+      }}
     >
-        <Logo />
-        <Profile_Button /> 
-        <Notification_Button />
+      <Logo />
+      <Profile_Button />
+      <Notification_Button />
     </div>
   );
 };
