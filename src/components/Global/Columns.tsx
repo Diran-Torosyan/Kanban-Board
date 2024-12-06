@@ -1,9 +1,14 @@
 import React from "react";
 import Task from "./Task";
 
+interface TaskType {
+  name: string;
+  description: string;
+}
+
 interface ColumnProps {
   title: string;
-  tasks: string[];
+  tasks: TaskType[];
 }
 
 const Column: React.FC<ColumnProps> = ({ title, tasks }) => {
@@ -24,25 +29,27 @@ const Column: React.FC<ColumnProps> = ({ title, tasks }) => {
         overflowY: "auto",
       }}
     >
-      <h3 
-        style={{ 
-            marginBottom: "10px", 
-            textAlign: "center",
-            fontSize: "1.6vw",
-            fontWeight: "bold",
-            fontFamily: "Helvetica, Arial, sans-serif", 
-            }}>
-            {title}
-        </h3>
-      <div 
-        style={{ 
-            width: "100%", 
-            display: "flex",
-            flexDirection: "column",
-            gap: "15px",
-        }}>
+      <h3
+        style={{
+          marginBottom: "10px",
+          textAlign: "center",
+          fontSize: "1.6vw",
+          fontWeight: "bold",
+          fontFamily: "Helvetica, Arial, sans-serif",
+        }}
+      >
+        {title}
+      </h3>
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: "15px",
+        }}
+      >
         {tasks.map((task, index) => (
-          <Task key={index} name={task} />
+          <Task key={index} name={task.name} description={task.description} />
         ))}
       </div>
     </div>
