@@ -5,13 +5,31 @@ import Column from "../../components/Global/Columns";
 
 const Employee_Landing: React.FC = () => {
   const columns = [
-    { id: 1, title: "Column Title", tasks: ["Case Title", "Case Title"] },
+    {
+      id: 1,
+      title: "Column Title",
+      tasks: [
+        { name: "Case Title", description: "Example desctiption" },
+        { name: "Case Title", description: "Example desctiption" },
+      ],
+    },
     {
       id: 2,
       title: "Column Title",
-      tasks: ["Case Title", "Case Title", "Case Title"],
+      tasks: [
+        { name: "Case Title", description: "Example desctiption" },
+        { name: "Case Title", description: "Example desctiption" },
+        { name: "Case Title", description: "Example desctiption" },
+      ],
     },
-    { id: 3, title: "Column Title", tasks: ["Case Title", "Case Title"] },
+    {
+      id: 3,
+      title: "Column Title",
+      tasks: [
+        { name: "Case Title", description: "Example desctiption" },
+        { name: "Case Title", description: "Example desctiption" },
+      ],
+    },
   ];
 
   return (
