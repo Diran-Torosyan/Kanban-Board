@@ -35,9 +35,9 @@ const Notification_Button: React.FC = () => {
           src="src\assets\images\Notification Button.png"
           alt="Profile"
           style={{
-            width: "125%",
-            height: "125%",
-            objectFit: "contain",
+            width: "200%",
+            height: "150%",
+            objectFit: "cover",
           }}
         />
       </button>
