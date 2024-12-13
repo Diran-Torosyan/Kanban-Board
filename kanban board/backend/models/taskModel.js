@@ -30,90 +30,136 @@ initializePool();
 
 // Get the a specific task by the task Id
 const fetchTaskById = async (taskId) => {
-    const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.query("SELECT * FROM Tasks WHERE id = ?", [taskId]);
-        return rows[0];
-    } finally {
-        connection.release();
+        const result = await pool.request()
+            .input("taskId", sql.Int, taskId)
+            .query("SELECT * FROM tasks WHERE task_id = @taskId");
+        return result.recordset[0];
+    } catch (err) {
+        console.error("Error fetching task: ", err);
     }
 }
 
 // Get the tasks that are assigned to the user
-const fetchTaskByUser = async (user) => {
-    const connection = await pool.getConnection();
+const fetchTaskByUser = async (userId) => {
     try {
-        const [rows] = await connection.query("SELECT * FROM Tasks WHERE assigned_to = ?", [user]);
-        return rows;
-    } finally {
-        connection.release();
+        const result = await pool.request()
+            .input("created_by", sql.Int, userId)
+            .query("SELECT * FROM tasks WHERE created_by = @userId");
+        return result.recordset[0];
+    } catch(err) {
+        console.error("Error fetching task: ", err);
     }
 }
 
 // Get the tasks by status and user
-const fetchTaskByUserAndStatus = async (user, status) => {
-    const connection = await pool.getConnection();
+const fetchTaskByUserAndStatus = async (userId, status) => {
     try {
-        const [rows] = await connection.query("SELECT * FROM Tasks WHERE assigned_to = ? AND status = ?", [user, status]);
-        return rows;
-    } finally {
-        connection.release();
+        const result = await pool.request()
+            .input("created_by", sql.Int, userId)
+            .input("status", sql.NVarChar(45), status)
+            .query("SELECT * FROM tasks WHERE created_by = @userId AND status = @status");
+        return result.recordset;
+    } catch(err) {
+        console.error("Error fetching task: ", err);
     }
 }
 
 // Create task
 const createTask = async (task) => {
-    const connection = await pool.getConnection();
     try {
-        const {title, description, priority, status, dueDate, created_by} = task;
-        const[result] = await connection.query(
-            "INSERT INTO Tasks (title, description, priority, status, dueDate, created_by) VALUES (?,?,?,?,?,?)",
-            [title, description, priority, status, dueDate, created_by]);
-
-        return result.insertId;
-    } finally {
-        connection.release();
+        const {title, description, status, due_date, created_by} = task;
+        const result = await pool.request()
+            .input('title', sql.NVarChar(45), title)
+            .input('description', sql.NVarChar(sql.MAX), description)
+            .input('status', sql.NVarChar(45), status)
+            .input('due_date', sql.Date, due_date)
+            .input('created_by', sql.Int, created_by)
+            .query(`
+                INSERT INTO tasks (title, description, status, due_date, created_by)
+                OUTPUT INSERTED.task_id
+                VALUES (@title, @description, @status, @due_date, @created_by)
+            `);
+        return result.recordset[0].task_id;
+    } catch (err) {
+        console.error("Error creating task:", err);
     }
-}
+};
+
 
 // Update task
 const updateTask = async (taskId, changes) => {
-    const connection = await pool.getConnection();
     try {
-        const {title, description, priority, status, dueDate, created_by} = changes;
-        const [result] = await connection.query(
-            "UPDATE Tasks SET title = ?, description = ?, priority = ?, status = ?, dueDate = ?, created_by = ? VALUES (?,?,?,?,?,?) WHERE id = ?",
-            [title, description, priority, status, dueDate, created_by, taskId]);
-        
-        const [rows] = await connection.query("SELECT * FROM Tasks WHERE id = ?", [taskId]);
-        return rows[0];
-    } finally {
-        connection.release();
+        const {title, description, status, due_date, created_by} = changes;
+        const result = await pool.request()
+        .input('taskId', sql.Int, taskId)
+        .input('title', sql.NVarChar(45), title)
+        .input('description', sql.NVarChar(sql.MAX), description)
+        .input('status', sql.NVarChar(45), status)
+        .input('due_date', sql.Date, due_date)
+        .input('created_by', sql.Int, created_by)
+        .query(`
+            UPDATE tasks
+            SET title = @title, description = @description, status = @status,
+                due_date = @due_date, created_by = @created_by
+            WHERE task_id = @taskId
+        `);
+
+        return await fetchTaskById(taskId);
+    } catch (err) {
+        console.error("Error updating task:", err);
     }
-}
+};
 
 // Delete task
 const deleteTask = async (taskId) => {
-    const connection = await pool.getConnection();
     try {
-        const [result] = await connection.query("DELETE FROM Tasks WHERE id = ?");
-        return result.affectedRows;
-    } finally {
-        connection.release();
+        const result = await pool.request()
+            .input('taskId', sql.Int, taskId)
+            .query("DELETE FROM tasks WHERE task_id = @taskId");
+        return result.rowsAffected[0];
+    } catch (err) {
+        console.error("Error deleting task:", err);
     }
-}
+};
 
 // Update task status
 const updateTaskStatus = async (taskId, newStatus) => {
-    const connection = await pool.getConnection();
     try {
-        const [result] = await connection.query("UPDATE Tasks SET status = ? WHERE id = ?", [newStatus, taskId]);
-        return result.affectedRows;
-    } finally {
-        connection.release();
+        const result = await pool.request()
+            .input('taskId', sql.Int, taskId)
+            .input('newStatus', sql.NVarChar(45), newStatus)
+            .query("UPDATE tasks SET status = @newStatus WHERE task_id = @taskId");
+        return result.rowsAffected[0]; 
+    } catch (err) {
+        console.error("Error updating task status:", err);
     }
-}
+};
 
 // Assign task
+const assignTask = async (taskId, userId) => {
+    try {
+        const result = await pool.request()
+            .input('taskId', sql.Int, taskId)
+            .input('userId', sql.Int, userId)
+            .query(`
+                INSERT INTO task_assigned (task_id, user_id)
+                VALUES (@taskId, @userId)
+            `);
+        return result.rowsAffected[0];
+    } catch (err) {
+        console.error("Error assigning task: ", err);
+    }
+};
 
-
+// Export all db queries for task table
+module.exports = {
+    fetchTaskById,
+    fetchTaskByUser,
+    fetchTaskByUserAndStatus,
+    createTask,
+    updateTask,
+    deleteTask,
+    updateTaskStatus,
+    assignTask
+};
