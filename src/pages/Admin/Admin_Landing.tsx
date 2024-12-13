@@ -189,8 +189,8 @@ const Admin_Landing: React.FC = () => {
                 setFile(e.target.files ? e.target.files[0] : null)
               }
             />
-            <button onClick={handleAddTask}>Add Task</button>
-            <button onClick={() => setIsTaskModalOpen(false)}>Cancel</button>
+            <button style={{ background: "#D22030", border:"2px solid black" }} onClick={handleAddTask}>Add Task</button>
+            <button style={{ background: "#D22030", border:"2px solid black" }} onClick={() => setIsTaskModalOpen(false)}>Cancel</button>
           </div>
         </div>
       )}
