@@ -42,9 +42,9 @@ const Profile_Button: React.FC = () => {
           src="src\assets\images\image 3.png"
           alt="Profile"
           style={{
-            width: "125%",
-            height: "125%",
-            objectFit: "contain",
+            width: "200%",
+            height: "150%",
+            objectFit: "cover",
           }}
         />
       </button>
