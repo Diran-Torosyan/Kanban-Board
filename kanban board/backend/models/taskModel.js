@@ -37,6 +37,7 @@ const fetchTaskById = async (taskId) => {
         return result.recordset[0];
     } catch (err) {
         console.error("Error fetching task: ", err);
+        throw err; 
     }
 }
 
@@ -49,6 +50,7 @@ const fetchTaskByUser = async (userId) => {
         return result.recordset[0];
     } catch(err) {
         console.error("Error fetching task: ", err);
+        throw err; 
     }
 }
 
@@ -62,6 +64,7 @@ const fetchTaskByUserAndStatus = async (userId, status) => {
         return result.recordset;
     } catch(err) {
         console.error("Error fetching task: ", err);
+        throw err; 
     }
 }
 
@@ -83,6 +86,7 @@ const createTask = async (task) => {
         return result.recordset[0].task_id;
     } catch (err) {
         console.error("Error creating task:", err);
+        throw err; 
     }
 };
 
@@ -92,22 +96,23 @@ const updateTask = async (taskId, changes) => {
     try {
         const {title, description, status, due_date, created_by} = changes;
         const result = await pool.request()
-        .input('taskId', sql.Int, taskId)
-        .input('title', sql.NVarChar(45), title)
-        .input('description', sql.NVarChar(sql.MAX), description)
-        .input('status', sql.NVarChar(45), status)
-        .input('due_date', sql.Date, due_date)
-        .input('created_by', sql.Int, created_by)
-        .query(`
-            UPDATE tasks
-            SET title = @title, description = @description, status = @status,
-                due_date = @due_date, created_by = @created_by
-            WHERE task_id = @taskId
-        `);
+            .input('taskId', sql.Int, taskId)
+            .input('title', sql.NVarChar(45), title)
+            .input('description', sql.NVarChar(sql.MAX), description)
+            .input('status', sql.NVarChar(45), status)
+            .input('due_date', sql.Date, due_date)
+            .input('created_by', sql.Int, created_by)
+            .query(`
+                UPDATE tasks
+                SET title = @title, description = @description, status = @status,
+                    due_date = @due_date, created_by = @created_by
+                WHERE task_id = @taskId
+            `);
 
         return await fetchTaskById(taskId);
     } catch (err) {
         console.error("Error updating task:", err);
+        throw err; 
     }
 };
 
@@ -120,6 +125,7 @@ const deleteTask = async (taskId) => {
         return result.rowsAffected[0];
     } catch (err) {
         console.error("Error deleting task:", err);
+        throw err; 
     }
 };
 
@@ -133,6 +139,7 @@ const updateTaskStatus = async (taskId, newStatus) => {
         return result.rowsAffected[0]; 
     } catch (err) {
         console.error("Error updating task status:", err);
+        throw err; 
     }
 };
 
@@ -149,6 +156,7 @@ const assignTask = async (taskId, userId) => {
         return result.rowsAffected[0];
     } catch (err) {
         console.error("Error assigning task: ", err);
+        throw err; 
     }
 };
 
