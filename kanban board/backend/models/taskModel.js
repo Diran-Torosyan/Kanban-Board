@@ -1,5 +1,32 @@
 // Make the connction to the database
-const pool = {};
+const sql = require('mssql');
+let pool;
+
+// Config for db connection
+const config = {
+    user: 'szadmin',
+    password: 'password123!',
+    server: 'kanbanboardsz.database.windows.net',
+    database: 'kanban_board',
+    options: {
+        encrypt: true,
+        trustServerCertificate: true 
+    }
+};
+
+// Initialize database connection
+const initializePool = async () => {
+    try {
+        pool = await sql.connect(config);
+        console.log("Connected to SQL Server");
+    } catch (err) {
+        console.error("Database connection failed: ", err);
+        throw err; 
+    }
+};
+
+// Call function to start the pool
+initializePool();
 
 // Get the a specific task by the task Id
 const fetchTaskById = async (taskId) => {
