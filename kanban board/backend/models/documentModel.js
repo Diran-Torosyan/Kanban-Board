@@ -66,8 +66,8 @@ const fetchDocumentsByTask = async (taskId) => {
 const fetchDocumentById = async (documentId) => {
     try {
         const result = await pool.request()
-        .input("documentId", sql.Int, documentId)
-        .query("SELECT * FROM documents WHERE document_id = @documentId");
+            .input("documentId", sql.Int, documentId)
+            .query("SELECT * FROM documents WHERE document_id = @documentId");
         return result.recordset[0];
     } catch (err) {
         console.error("Fetching document error: ", err);
@@ -92,8 +92,8 @@ const deleteDocument = async (documentId) => {
 const fetchDocumentsByUser = async (userId) => {
     try {
         const result = await pool.request()
-        .input("userId", sql.Int, userId)
-        .query("SELECT * FROM documents WHERE user_id = @userId");
+            .input("userId", sql.Int, userId)
+            .query("SELECT * FROM documents WHERE user_id = @userId");
         return result;
     } catch (err) {
         console.error("Fetching document error: ", err);
@@ -105,14 +105,14 @@ const fetchDocumentsByUser = async (userId) => {
 const updateDocument = async (documentId, userId, file) => {
     try {
         const result = await pool.request()
-        .input("documentId", sql.Int, documentId)
-        .input("userId", sql.Int, userId)
-        .input("file", sql.VarBinary(sql.MAX), file)
-        .query(`
-            UPDATE documents
-            SET user_Id = @user_Id, pdf_document = @file
-            WHERE document_id = @documentId
-        `);
+            .input("documentId", sql.Int, documentId)
+            .input("userId", sql.Int, userId)
+            .input("file", sql.VarBinary(sql.MAX), file)
+            .query(`
+                UPDATE documents
+                SET user_Id = @user_Id, pdf_document = @file
+                WHERE document_id = @documentId
+            `);
         return await fetchDocumentById(documentId);
     } catch(err) {
         console.error("Update document error: ", err);
