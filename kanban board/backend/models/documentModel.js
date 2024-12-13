@@ -28,70 +28,103 @@ const initializePool = async () => {
 // Call function to start the pool
 initializePool();
 
-// Upload a document
+// upload a document
 const uploadDocument = async (taskId, userId, file) => {
-    const connection = await pool.getConnection();
     try {
-        const [result] = await connection.query(
-            "INSERT INTO Documents (taskId, uploaded_by, file, uploaded_on) VALUES (?, ?, ?, NOW())", [taskId, userId, file]);
-        return result.insertId;
-    } finally {
-        connection.release();
+        const result = await pool.request()
+            .input("taskId", sql.Int, taskId)
+            .input("userId", sql.Int, userId)
+            .input("file", sql.VarBinary(sql.MAX), file) 
+            .query(`
+                INSERT INTO documents (task_id, uploaded_by, pdf_document, uploaded_on)
+                OUTPUT INSERTED.document_id
+                VALUES (@taskId, @userId, @file, GETDATE())
+            `);
+
+        return result.recordset[0].document_id; 
+    } catch (err) {
+        console.error("Uploading document error: ", err);
+        throw err;
     }
-}
+};
 
 // Retrieve all documents for a task
 const fetchDocumentsByTask = async (taskId) => {
-    const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.query("SELECT * FROM Documents WHERE task_id = ?", [taskId]);
-        return rows;
-    } finally {
-        connection.release();
+        const result = await pool.request()
+        .input("taskId", sql.Int, taskId)
+        .query("SELECT * FROM documents WHERE task_id = @taskId");
+        return result.recordset[0];
+    } catch (err) {
+        console.error("Fetching document error: ", err);
+        throw err;
     }
-} 
+};
+
 
 // Retrieve a document by ID
 const fetchDocumentById = async (documentId) => {
-    const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.query("SELECT * FROM Documents WHERE document_id = ?", [documentId]);
-        return rows[0];
-    } finally {
-        connection.release();
+        const result = await pool.request()
+        .input("documentId", sql.Int, documentId)
+        .query("SELECT * FROM documents WHERE document_id = @documentId");
+        return result.recordset[0];
+    } catch (err) {
+        console.error("Fetching document error: ", err);
+        throw err;
     }
-}
+};
 
 // Delete a document
 const deleteDocument = async (documentId) => {
-    const connection = await pool.getConnection();
     try {
-        const [result] = await connection.query("DELETE FROM Documents WHERE document_id = ?", [documentId]);
-        return result.affectedRows;
-    } finally {
-        connection.release();
+        const result = await pool.request()
+            .input('documentId', sql.Int, documentId)
+            .query("DELETE FROM documents WHERE document_id = @documentId");
+        return result.rowsAffected[0];
+    } catch (err) {
+        console.error("Error deleting document:", err);
+        throw err;
     }
-}
+};
 
 // Fetch Documents Uploaded by User
 const fetchDocumentsByUser = async (userId) => {
-    const connection = await pool.getConnection();
     try {
-        const [rows] = await connection.query("SELECT * FROM Documents WHERE uploaded_by = ?", [userId]);
-        return rows;
-    } finally {
-        connection.release();
+        const result = await pool.request()
+        .input("userId", sql.Int, userId)
+        .query("SELECT * FROM documents WHERE user_id = @userId");
+        return result;
+    } catch (err) {
+        console.error("Fetching document error: ", err);
+        throw err;
     }
-}
+};
 
 // Update Document
 const updateDocument = async (documentId, userId, file) => {
-    const connection = await pool.getConnection();
     try {
-        const [result] = await connection.query(
-            "UPDATE Documents SET uploaded_by = ? AND file = ? WHERE document_id = ?", [userId, file, documentId]);
-        return rows.affectedRows;
-    } finally {
-        connection.release();
+        const result = await pool.request()
+        .input("documentId", sql.Int, documentId)
+        .input("userId", sql.Int, userId)
+        .input("file", sql.VarBinary(sql.MAX), file)
+        .query(`
+            UPDATE documents
+            SET user_Id = @user_Id, pdf_document = @file
+            WHERE document_id = @documentId
+        `);
+        return await fetchDocumentById(documentId);
+    } catch(err) {
+        console.error("Update document error: ", err);
+        throw err;
     }
-}
+};
+
+module.exports = {
+    uploadDocument,
+    fetchDocumentsByTask,
+    fetchDocumentsByUser,
+    fetchDocumentById,
+    deleteDocument,
+    updateDocument
+};
