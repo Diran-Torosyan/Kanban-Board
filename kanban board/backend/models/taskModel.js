@@ -16,13 +16,21 @@ const config = {
 
 // Initialize database connection
 const initializePool = async () => {
-    try {
-        pool = await sql.connect(config);
-        console.log("Connected to SQL Server");
-    } catch (err) {
-        console.error("Database connection failed: ", err);
-        throw err; 
+    if (!pool) {
+        try {
+            pool = await sql.connect(config);
+            console.log("Connected to SQL Server");
+        } catch (err) {
+            console.error("Database connection failed: ", err);
+            throw err; 
+        }
     }
+};
+
+// make sure that db is connected to before querying
+const getPool = async () => {
+    if (!pool) await initializePool();
+    return pool;
 };
 
 // Call function to start the pool
@@ -31,7 +39,8 @@ initializePool();
 // Get the a specific task by the task Id
 const fetchTaskById = async (taskId) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input("taskId", sql.Int, taskId)
             .query("SELECT * FROM tasks WHERE task_id = @taskId");
         return result.recordset[0];
@@ -44,8 +53,9 @@ const fetchTaskById = async (taskId) => {
 // Get the tasks that are assigned to the user
 const fetchTaskByUser = async (userId) => {
     try {
-        const result = await pool.request()
-            .input("created_by", sql.Int, userId)
+        const db = await getPool();
+        const result = await db.request()
+            .input("userId", sql.Int, userId)
             .query("SELECT * FROM tasks WHERE created_by = @userId");
         return result.recordset[0];
     } catch(err) {
@@ -57,8 +67,9 @@ const fetchTaskByUser = async (userId) => {
 // Get the tasks by status and user
 const fetchTaskByUserAndStatus = async (userId, status) => {
     try {
-        const result = await pool.request()
-            .input("created_by", sql.Int, userId)
+        const db = await getPool();
+        const result = await db.request()
+            .input("userId", sql.Int, userId)
             .input("status", sql.NVarChar(45), status)
             .query("SELECT * FROM tasks WHERE created_by = @userId AND status = @status");
         return result.recordset;
@@ -72,7 +83,8 @@ const fetchTaskByUserAndStatus = async (userId, status) => {
 const createTask = async (task) => {
     try {
         const {title, description, status, due_date, created_by} = task;
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input('title', sql.NVarChar(45), title)
             .input('description', sql.NVarChar(sql.MAX), description)
             .input('status', sql.NVarChar(45), status)
@@ -95,7 +107,8 @@ const createTask = async (task) => {
 const updateTask = async (taskId, changes) => {
     try {
         const {title, description, status, due_date, created_by} = changes;
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input('taskId', sql.Int, taskId)
             .input('title', sql.NVarChar(45), title)
             .input('description', sql.NVarChar(sql.MAX), description)
@@ -119,7 +132,8 @@ const updateTask = async (taskId, changes) => {
 // Delete task
 const deleteTask = async (taskId) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input('taskId', sql.Int, taskId)
             .query("DELETE FROM tasks WHERE task_id = @taskId");
         return result.rowsAffected[0];
@@ -132,7 +146,8 @@ const deleteTask = async (taskId) => {
 // Update task status
 const updateTaskStatus = async (taskId, newStatus) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input('taskId', sql.Int, taskId)
             .input('newStatus', sql.NVarChar(45), newStatus)
             .query("UPDATE tasks SET status = @newStatus WHERE task_id = @taskId");
@@ -146,7 +161,8 @@ const updateTaskStatus = async (taskId, newStatus) => {
 // Assign task
 const assignTask = async (taskId, userId) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input('taskId', sql.Int, taskId)
             .input('userId', sql.Int, userId)
             .query(`

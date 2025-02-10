@@ -16,13 +16,21 @@ const config = {
 
 // Initialize database connection
 const initializePool = async () => {
-    try {
-        pool = await sql.connect(config);
-        console.log("Connected to SQL Server");
-    } catch (err) {
-        console.error("Database connection failed: ", err);
-        throw err; 
+    if (!pool) {
+        try {
+            pool = await sql.connect(config);
+            console.log("Connected to SQL Server");
+        } catch (err) {
+            console.error("Database connection failed: ", err);
+            throw err; 
+        }
     }
+};
+
+// make sure that db is connected to before querying
+const getPool = async () => {
+    if (!pool) await initializePool();
+    return pool;
 };
 
 // Call function to start the pool
@@ -31,7 +39,8 @@ initializePool();
 // upload a document
 const uploadDocument = async (taskId, userId, file) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input("taskId", sql.Int, taskId)
             .input("userId", sql.Int, userId)
             .input("file", sql.VarBinary(sql.MAX), file) 
@@ -51,7 +60,8 @@ const uploadDocument = async (taskId, userId, file) => {
 // Retrieve all documents for a task
 const fetchDocumentsByTask = async (taskId) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
         .input("taskId", sql.Int, taskId)
         .query("SELECT * FROM documents WHERE task_id = @taskId");
         return result.recordset[0];
@@ -65,7 +75,8 @@ const fetchDocumentsByTask = async (taskId) => {
 // Retrieve a document by ID
 const fetchDocumentById = async (documentId) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input("documentId", sql.Int, documentId)
             .query("SELECT * FROM documents WHERE document_id = @documentId");
         return result.recordset[0];
@@ -78,7 +89,8 @@ const fetchDocumentById = async (documentId) => {
 // Delete a document
 const deleteDocument = async (documentId) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input('documentId', sql.Int, documentId)
             .query("DELETE FROM documents WHERE document_id = @documentId");
         return result.rowsAffected[0];
@@ -91,7 +103,8 @@ const deleteDocument = async (documentId) => {
 // Fetch Documents Uploaded by User
 const fetchDocumentsByUser = async (userId) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input("userId", sql.Int, userId)
             .query("SELECT * FROM documents WHERE user_id = @userId");
         return result;
@@ -104,13 +117,14 @@ const fetchDocumentsByUser = async (userId) => {
 // Update Document
 const updateDocument = async (documentId, userId, file) => {
     try {
-        const result = await pool.request()
+        const db = await getPool();
+        const result = await db.request()
             .input("documentId", sql.Int, documentId)
             .input("userId", sql.Int, userId)
             .input("file", sql.VarBinary(sql.MAX), file)
             .query(`
                 UPDATE documents
-                SET user_Id = @user_Id, pdf_document = @file
+                SET uploaded_by = @userId, pdf_document = @file
                 WHERE document_id = @documentId
             `);
         return await fetchDocumentById(documentId);

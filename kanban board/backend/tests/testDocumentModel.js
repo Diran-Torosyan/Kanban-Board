@@ -1,4 +1,6 @@
+// need file system module to pass file as a file buffer
 const documentModel = require("../models/documentModel.js");
+const fs = require("fs");
 
 // upload a document
 const testUploadDocument = async (taskId, userId, file) => {
@@ -62,14 +64,17 @@ const testUpdateDocument = async (documentId, userId, file) => {
 
 // Run Tests
 const runTests = async () => {
+    const fileBuffer = fs.readFileSync("./backend/tests/testfile.txt");
+    const secondFileBuffer = fs.readFileSync("./backend/tests/secondtestfile.txt");
+
     console.log("\ntest results: \n");
 
-    await testUploadDocument(1, 2, "file");
-    await testFetchDocumentsByTask(12);
-    await testFetchDocumentById(12);
-    await testDeleteDocument(12);
+    await testUploadDocument(5, 1, fileBuffer);
+    await testFetchDocumentsByTask(5);
+    await testFetchDocumentById(3);
+    await testDeleteDocument(2);
     await testFetchDocumentsByUser(1);
-    await testUpdateDocument(12, 23, "file");
+    await testUpdateDocument(3, 1, secondFileBuffer);
 
     console.log("\nAll tests executed.\n");
 };

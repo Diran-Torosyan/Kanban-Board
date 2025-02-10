@@ -85,10 +85,6 @@ const testAssignTask = async (taskId, userId) => {
 const runTests = async () => {
     console.log("\ntest results: \n");
 
-    await testFetchTaskById(1);
-    await testFetchTaskByUser(1);
-    await testFetchTaskByUserAndStatus(1, "pending");
-
     const newTask = {
         title: "Manual Test Task",
         description: "This is a test task created manually.",
@@ -98,6 +94,19 @@ const runTests = async () => {
     };
     await testCreateTask(newTask);
 
+    const secondTask = {
+        title: "Manual Test Task #2",
+        description: "This is a test task created manually for the second time.",
+        status: "created",
+        due_date: "2025-02-10",
+        created_by: 1 // Change to an existing user ID
+    };
+    await testCreateTask(secondTask);
+
+    await testFetchTaskById(4);
+    await testFetchTaskByUser(1);
+    await testFetchTaskByUserAndStatus(1, "pending");
+
     const updatedTask = {
         title: "Manual Test Task",
         description: "This is a test to see updated describtion.",
@@ -105,10 +114,10 @@ const runTests = async () => {
         due_date: "2025-02-01",
         created_by: 1 // Change to an existing user ID
     };
-    await testUpdateTask(1, updatedTask);
-    await testDeleteTask(2);
-    await testUpdateTaskStatus(2, "done");
-    await testAssignTask(2, 1);
+    await testUpdateTask(5, updatedTask);
+    await testDeleteTask(4);
+    await testUpdateTaskStatus(6, "done");
+    await testAssignTask(5, 1);
 
     console.log("\nAll tests executed.\n");
 };

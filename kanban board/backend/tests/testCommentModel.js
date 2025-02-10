@@ -36,7 +36,7 @@ const testUpdateComment = async (commentId, taskId, userId, content) => {
         const comment = await commentModel.updateComment(commentId, taskId, userId, content);
         console.log("updating comment result: ", comment);
     } catch (error) {
-        console.log("update comment error: ", err);
+        console.log("update comment error: ", error);
     }
 };
 
@@ -54,11 +54,12 @@ const testDeleteComment = async (commentId) => {
 const runTests = async () => {
     console.log("\ntest results: \n");
 
-    await testAddComment(1, 2, "content");
-    await testGetCommentByTask(1);
-    await testGetCommentByUser(12);
-    await testUpdateComment(5, 1, 12, "content");
-    await testDeleteComment(5);
+    await testAddComment(5, 1, "content");
+    await testAddComment(5, 1, "testing comments");
+    await testGetCommentByTask(5);
+    await testGetCommentByUser(1);
+    await testUpdateComment(1, 5, 1, "new content");
+    await testDeleteComment(2);
 
     console.log("\nAll tests executed.\n");
 };

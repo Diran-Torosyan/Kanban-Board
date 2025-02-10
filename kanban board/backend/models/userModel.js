@@ -1,8 +1,6 @@
 // Make the connction to the database
 const sql = require('mssql');
 let pool;
-// for creating random user ID's
-const { v4: uuidv4 } = require('uuid');
 
 // Import bcrypt for hashing passwords
 const bcrypt = require('bcrypt'); 
@@ -21,203 +19,268 @@ const config = {
 
 // Initialize database connection
 const initializePool = async () => {
-    try {
-        pool = await sql.connect(config);
-        console.log("Connected to SQL Server");
-    } catch (err) {
-        console.error("Database connection failed: ", err);
-        throw err; 
+    if (!pool) {
+        try {
+            pool = await sql.connect(config);
+            console.log("Connected to SQL Server");
+        } catch (err) {
+            console.error("Database connection failed: ", err);
+            throw err; 
+        }
     }
+};
+
+// make sure that db is connected to before querying
+const getPool = async () => {
+    if (!pool) await initializePool();
+    return pool;
 };
 
 // Call function to start the pool
 initializePool();
 
-// get the username from the db
-const fetchUsername = async (username) => {
+// Add a user
+const addUser = async (username, email, password, role, department) => {
+  try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const db = await getPool();
+      const result = await db.request()
+          .input("username", sql.NVarChar, username)
+          .input("email", sql.NVarChar, email)
+          .input("password", sql.NVarChar, hashedPassword)
+          .input("role", sql.NVarChar, role)
+          .input("department", sql.NVarChar, department)
+          .query(`
+              INSERT INTO [user] (username, email, password, role, department)
+              OUTPUT INSERTED.user_id
+              VALUES (@username, @email, @password, @role, @department)
+          `);
+      return result.recordset[0].user_id;
+  } catch (err) {
+      console.error("Error creating user:", err);
+      throw err;
+  }
+};
+
+// get the user from the db by user Id
+const fetchUserByUserId = async (userId) => {
     try {
-        const result = await pool.request()
-            .input("username", sql.Int, username)
-            .query("SELECT * FROM user WHERE username = @username");
+      const db = await getPool();
+      const result = await db.request()
+            .input("user_id", sql.Int, userId)
+            .query("SELECT * FROM [user] WHERE user_id = @user_id");
         return result.recordset[0];
     } catch (err) {
         console.error("Error fetching task: ", err);
         throw err; 
     }
-}
+};
+
+// get the username from the db by email
+const fetchUserByEmail = async (email) => {
+  try {
+    const db = await getPool();
+    const result = await db.request()
+          .input("email", sql.NVarChar, email)
+          .query("SELECT * FROM [user] WHERE email = @email");
+      return result.recordset[0];
+  } catch (err) {
+      console.error("Error fetching task: ", err);
+      throw err; 
+  }
+};
+
+// get the username from the db by email
+const fetchUsernameByEmail = async (email) => {
+  try {
+    const db = await getPool();
+    const result = await db.request()
+          .input("email", sql.NVarChar, email)
+          .query("SELECT username FROM [user] WHERE email = @email");
+      return result.recordset[0];
+  } catch (err) {
+      console.error("Error fetching task: ", err);
+      throw err; 
+  }
+};
 
 // Get the email that is assigned to the user
-const fetchEmail = async (email) => {
+const fetchEmailByUserId = async (userId) => {
     try {
-        const result = await pool.request()
-            .input("email", sql.Int, email)
-            .query("SELECT * FROM user WHERE email = @email");
+      const db = await getPool();
+      const result = await db.request()
+            .input("userId", sql.Int, userId)
+            .query("SELECT email FROM [user] WHERE user_id = @userId");
         return result.recordset[0];
     } catch(err) {
         console.error("Error fetching task: ", err);
         throw err; 
     }
-}
+};
 
-// Get the password of the user
-const fetchPassword = async (password) => {
+// Get the password of the user by their email
+const fetchPasswordByEmail = async (email) => {
     try {
-        const result = await pool.request()
-            .input("password", sql.Int, password)
-            .query("SELECT * FROM user WHERE password = @password");
+      const db = await getPool();
+      const result = await db.request()
+            .input("email", sql.NVarChar, email)
+            .query("SELECT password FROM [user] WHERE email = @email");
         return result.recordset;
     } catch(err) {
         console.error("Error fetching task: ", err);
         throw err; 
     }
-}
-// Get the userID of the user
-const fetchuserID = async (userid) => {
+};
+
+// Get the password of the user by id
+const fetchPasswordByUserId = async (userId) => {
+  try {
+    const db = await getPool();
+    const result = await db.request()
+          .input("userId", sql.Int, userId)
+          .query("SELECT password FROM [user] WHERE user_id = @userId");
+      return result.recordset;
+  } catch(err) {
+      console.error("Error fetching task: ", err);
+      throw err; 
+  }
+};
+
+// Get the password of the user by id
+const fetchPasswordByUsername = async (username) => {
+  try {
+    const db = await getPool();
+    const result = await db.request()
+          .input("username", sql.NVarChar, username)
+          .query("SELECT password FROM [user] WHERE username = @username");
+      return result.recordset;
+  } catch(err) {
+      console.error("Error fetching task: ", err);
+      throw err; 
+  }
+};
+
+// Get the userID of the user by email
+const fetchUserID = async (email) => {
     try {
-        const result = await pool.request()
-            .input("userid", sql.Int, userid)
-            .query("SELECT * FROM user WHERE userid = @user_id");
-        return result.recordset;
+
+      const db = await getPool();
+      const result = await db.request()
+          .input("email", sql.NVarChar, email)
+          .query("SELECT user_id FROM [user] WHERE email = @email");
+      return result.recordset;
     } catch(err) {
         console.error("Error fetching task: ", err);
         throw err; 
     }
-}
-
-// Create userID
-async function createUniqueUserID() {
-    let userID;
-    let isUnique = false;
-  
-    while (!isUnique) {
-      // Generate a random userID (e.g., using UUID)
-      userID = uuidv4();
-  
-      // Check if the userID already exists in the database
-      const query = `SELECT COUNT(*) AS count FROM user WHERE userID = user_id`;
-      isUnique = await new Promise((resolve, reject) => {
-        db.query(query, [userID], (err, results) => {
-          if (err) reject(err);
-          resolve(results[0].count === 0);
-        });
-      });
-    }
-  
-    // Insert the unique userID into the database
-    const insertQuery = `INSERT INTO user (userID) VALUES (userID)`;
-    db.query(insertQuery, [userID], (err, results) => {
-      if (err) throw err;
-      console.log(`New userID created: ${userID}`);
-    });
-  
-    return userID;
-}
+};
  
 
 //update email
-function updateEmail(userId, newEmail) {
-    // SQL query to update the email for a specific user
-    const query = `UPDATE user SET email = email WHERE id = user_id`;
-  
-    // Execute the query with parameterized values
-    db.query(query, [newEmail, userId], (err, results) => {
-      if (err) {
-        console.error('Error updating email:', err);
-        return;
-      }
-      if (results.affectedRows > 0) {
-        console.log(`Email updated successfully for user ID: ${userId}`);
-      } else {
-        console.log(`No user found with ID: ${userId}`);
-      }
-    });
-}
+const updateEmail = async (userId, newEmail) => {
+    try {
+      const db = await getPool();
+      const result = await db.request()
+          .input("user_id", sql.Int, userId)
+          .input("email", sql.NVarChar, newEmail)
+          .query(`
+              UPDATE [user]
+              SET email = @email
+              WHERE user_id = @user_id
+          `);
+      return result.rowsAffected[0] > 0;
+    } catch (err) {
+      console.log("error updating email: ", err);
+    }
+};
 
 
 //update password
-async function updatePassword(userId, newPassword) {
-    try {
-      // Hash the new password
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-  
-      // SQL query to update the password for a specific user
-      const query = `UPDATE user SET password = password WHERE id = user_id`;
-  
-      // Execute the query with parameterized values
-      db.query(query, [hashedPassword, userId], (err, results) => {
-        if (err) {
-          console.error('Error updating password:', err);
-          return;
-        }
-        if (results.affectedRows > 0) {
-          console.log(`Password updated successfully for user ID: ${userId}`);
-        } else {
-          console.log(`No user found with ID: ${userId}`);
-        }
-      });
-    } catch (error) {
-      console.error('Error hashing password:', error);
-    }
-}
+const updatePassword = async (userId, newPassword) => {
+  try {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
-//update role
-function updateRole(userId, newRole) {
-    // Validate the new role (example: check if it's 'admin' or 'user')
-    const validRoles = []; // Define valid roles
-    if (!validRoles.includes(newRole)) {
-      console.error('Invalid role:', newRole);
-      return;
-    }
-  
-    // SQL query to update the role for a specific user
-    const query = `UPDATE user SET role = role WHERE id = user_id`;
-  
-    // Execute the query with parameterized values
-    db.query(query, [newRole, userId], (err, results) => {
-      if (err) {
-        console.error('Error updating role:', err);
-        return;
-      }
-      if (results.affectedRows > 0) {
-        console.log(`Role updated successfully for user ID: ${userId}`);
-      } else {
-        console.log(`No user found with ID: ${userId}`);
-      }
-    });
-}
+    const db = await getPool();
+    const result = await db.request()
+        .input("userId", sql.Int, userId)
+        .input("hashedPassword", sql.NVarChar, hashedPassword)
+        .query("UPDATE [user] SET password = @hashedPassword WHERE user_id = @userId");
+    
+    return result.rowsAffected[0] > 0;
+  } catch (err) {
+    console.log("error updating password: ", err);
+  }
+};
+
+// update the role
+const updateRole = async (userId, newRole) => {
+  /*
+  const validRoles = ["admin", "user"];
+  if (!validRoles.includes(newRole)) {
+      console.error("Invalid role:", newRole);
+      return false;
+  }
+  */
+
+  try {
+      const db = await getPool();
+      const result = await db.request()
+          .input("user_id", sql.Int, userId)
+          .input("newRole", sql.NVarChar, newRole)
+          .query("UPDATE [user] SET role = @newRole WHERE user_id = @user_id");
+
+      return result.rowsAffected[0] > 0;
+  } catch (err) {
+      console.error("Error updating role:", err);
+      throw err;
+  }
+};
 
 //update department
-function updateDepartment(userId, newDepartment) {
-    // SQL query to update the department for a specific user
-    const query = `UPDATE user SET department = department WHERE id = user_id`;
-  
-    // Execute the query with parameterized values
-    db.query(query, [newDepartment, userId], (err, results) => {
-      if (err) {
-        console.error('Error updating department:', err);
-        return;
-      }
-      if (results.affectedRows > 0) {
-        console.log(`Department updated successfully for user ID: ${userId}`);
-      } else {
-        console.log(`No user found with ID: ${userId}`);
-      }
-    });
-}
+const updateDepartment = async (userId, newDepartment) => {
+    try {
+        const db = await getPool();
+        const result = await db.request()
+            .input("user_id", sql.Int, userId)
+            .input("department", sql.NVarChar, newDepartment)
+            .query("UPDATE [user] SET department = @department WHERE user_id = @user_id");
+        
+          return result.rowsAffected[0] > 0;
+    } catch (err) {
+      console.log("error updating department: ", err);
+    }
+};
 
+// remove a user
+const deleteUser = async (userId) => {
+  try {
+      const db = await getPool();
+      const result = await db.request()
+          .input("userId", sql.Int, userId)
+          .query("DELETE FROM [user] WHERE user_id = @userId");
 
-
+      return result.rowsAffected[0] > 0;
+  } catch (err) {
+      console.error("Error deleting user:", err);
+      throw err;
+  }
+};
 
 // Export all db queries for task table
 module.exports = {
-    fetchEmail,
-    fetchPassword,
-    fetchUsername,
-    fetchuserID,
-    createUniqueUserID,
+    addUser,
+    fetchUserID,
     updateEmail,
     updatePassword,
     updateDepartment,
     updateRole,
+    deleteUser,
+    fetchPasswordByUserId,
+    fetchPasswordByEmail,
+    fetchEmailByUserId,
+    fetchUsernameByEmail,
+    fetchUserByEmail,
+    fetchUserByUserId,
+    fetchPasswordByUsername,
 };
