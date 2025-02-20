@@ -1,28 +1,26 @@
 import React, { useState } from "react";
 import SSOImage from "../../../assets/images/Key-PNG-Clipart.png";
-import { useNavigate } from "react-router-dom";
 
 const LoginButton: React.FC = () => {
-  const [showLoginOptions, setShowLoginOptions] = useState(false);
-  const navigate = useNavigate();
+  const [showLoginFields, setShowLoginFields] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSSOClick = () => {
-    setShowLoginOptions((prev) => !prev);
+  const handleClick = () => {
+    setShowLoginFields((prev) => !prev);
   };
 
-  const handleEmployeeClick = () => {
-    navigate("/employee-landing");
-  };
-
-  const handleAdminClick = () => {
-    navigate("/admin-landing");
+  const handleLogin = () => {//login verification
+    console.log("Email:", email);
+    console.log("Password:", password);
+    
   };
 
   return (
-    <div>
-      {/* SSO Login Button */}
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      {/*Login Button */}
       <button
-        onClick={handleSSOClick}
+        onClick={handleClick}
         style={{
           backgroundColor: "black",
           color: "white",
@@ -37,69 +35,67 @@ const LoginButton: React.FC = () => {
           justifyContent: "center",
           alignItems: "center",
           cursor: "pointer",
-          marginTop: "-170px",
+          marginTop: "-75px",
         }}
       >
-        <span>Login with SSO</span>
-        <img
-          src={SSOImage}
-          alt="SSO Icon"
-          style={{
-            width: "30px",
-            height: "30px",
-            marginLeft: "10px",
-            filter: "invert(1)",
-            transform: "scaleY(-1) rotate(225deg)",
-            verticalAlign: "middle",
-          }}
-        />
+        <span>Login</span>
+        
       </button>
 
-      {/* Employee and Admin Buttons */}
-      {showLoginOptions && (
-        <>
-          <button
-            onClick={handleEmployeeClick}
+      {/* Email & Password Fields with Login Button */}
+      {showLoginFields && (
+        <div style={{ marginTop: "20px", width: "350px" }}>
+          {/* Email Input */}
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             style={{
-              backgroundColor: "black",
-              color: "white",
-              fontSize: "25px",
-              fontWeight: "bold",
-              fontFamily: "Helvetica, Arial, sans-serif",
-              width: "350px",
-              padding: "15px",
-              border: "none",
+              width: "100%",
+              padding: "12px",
+              fontSize: "18px",
               borderRadius: "5px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
+              border: "1px solid #ccc",
+              marginBottom: "10px",
             }}
-          >
-            <span>Employee</span>
-          </button>
+          />
 
+          {/* Password Input */}
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "12px",
+              fontSize: "18px",
+              borderRadius: "5px",
+              border: "1px solid #ccc",
+              marginBottom: "20px",
+            }}
+          />
+
+          {/* Login Button */}
           <button
-            onClick={handleAdminClick}
+            onClick={handleLogin}
             style={{
               backgroundColor: "black",
               color: "white",
-              fontSize: "25px",
+              fontSize: "20px",
               fontWeight: "bold",
               fontFamily: "Helvetica, Arial, sans-serif",
-              width: "350px",
-              padding: "15px",
+              width: "100%",
+              padding: "12px",
               border: "none",
               borderRadius: "5px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
               cursor: "pointer",
             }}
           >
-            <span>Admin</span>
+            Login
           </button>
-        </>
+        </div>
       )}
     </div>
   );
