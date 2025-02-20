@@ -3,14 +3,14 @@ const crypto = require('crypto');
 const fs = require("fs");
 
 // Load JSON file
-const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
-const users = config.users;
+//const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
+//const users = config.users;
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'KanbanBoard490@gmail.com',
-        pass: 'Comp490!',
+        user: 'kanbanboard491@gmail.com',
+        pass: 'xahp yfgz dfxa eisz',
     },
 });
 
@@ -22,7 +22,7 @@ function generateCode() {
 //this will send the code to the email
 function sendCodeEmail (email, Code) {
     const mailOptions = {
-        from: 'KanbanBoard490@gmail.com',
+        from: 'kanbanboard491@gmail.com',
         to: email,
         subject : 'Authentication Code',
         text: `Your authentication code is: ${Code}`,

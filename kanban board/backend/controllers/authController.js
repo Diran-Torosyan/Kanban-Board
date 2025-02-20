@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const { fetchUserByEmail, fetchPasswordByEmail } = require('../models/userModel');
-const { generateCode, sendCodeEmail, tempCodes } = require('./twoFactor');
+const { generateCode, sendCodeEmail, tempCodes } = require('./2faEmail.js');
 
 // login endpoint for validating credentials
 exports.login = async (req, res) => {
