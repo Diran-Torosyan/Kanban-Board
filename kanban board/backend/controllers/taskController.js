@@ -1,4 +1,4 @@
-const { fetchTaskByUser } = require('../models/tasksModel.js');
+const { fetchTaskByUser } = require('../models/taskModel.js');
 
 exports.getUserTasks = async (req, res) => {
   try {
