@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const { fetchUserByEmail, fetchPasswordByEmail } = require('../models/userModel');
+const { generateCode, sendCodeEmail, tempCodes } = require('./twoFactor');
 
 // login endpoint for validating credentials
 exports.login = async (req, res) => {
@@ -12,11 +13,8 @@ exports.login = async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  console.log(user);
-
   // fetch the stored password hash from the db
   const storedPasswordResult = await fetchPasswordByEmail(email);
-  console.log(storedPasswordResult);
   // check if a password has been returned
   if (!storedPasswordResult || storedPasswordResult.length === 0) {
     return res.status(401).json({ message: 'Invalid credentials' });
@@ -31,7 +29,10 @@ exports.login = async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  console.log(user.role);
+  // send 2fa code email
+  const code = generateCode();
+  tempCodes[email] = code; // store the code
+  sendCodeEmail(email, code);
 
   // allow user to log in (specifify if employee or admin)
   if(user.role === "admin") {
@@ -39,4 +40,17 @@ exports.login = async (req, res) => {
   }
 
   return res.json({ message: 'Employee login successful' });
+};
+
+// Example verification endpoint (can be placed in authController or its own route file)
+exports.verifyCode = (req, res) => {
+  const { email, code } = req.body;
+  
+  // check that user has a code generated and that it matches
+  if (tempCodes[email] && parseInt(code, 10) === tempCodes[email]) {
+    delete tempCodes[email];  // delete code from temp storage
+    return res.json({ message: '2FA code correct' });
+  } else {
+    return res.status(400).json({ message: 'Invalid 2FA code' });
+  }
 };

@@ -9,8 +9,8 @@ const users = config.users;
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'where the email would go when we query',
-        pass: 'the password for the account',
+        user: 'KanbanBoard490@gmail.com',
+        pass: 'Comp490!',
     },
 });
 
@@ -22,13 +22,14 @@ function generateCode() {
 //this will send the code to the email
 function sendCodeEmail (email, Code) {
     const mailOptions = {
-        from: ' which email we will send from',
-        to: 'the email we are sending to',
+        from: 'KanbanBoard490@gmail.com',
+        to: email,
         subject : 'Authentication Code',
-        text: ' the message that will actually be in the email, and put the code in here',
+        text: `Your authentication code is: ${Code}`,
+
     };
 
-    transporter,sendMail(mailOptions, (error, info) => {
+    transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.log('error sending code: ', error);
         } else {
@@ -37,29 +38,7 @@ function sendCodeEmail (email, Code) {
     });
 }
 
-// route to request the code
-app.post('/request-code', (req,res) => {
-    const email = req.body.email;
-    const code = generateCode();
+const tempCodes = {};
 
-    sendCodeEmail(email, code);
-
-    // need to find way to store the code temporarily
-
-    res.send('code sent to your email');
-
-});
-
-
-//route to verify the code
-
-app.post('/verify code', (req,res) => {
-    const {email, code} = req.body;
-
-    if(users[email] && users[email].code === parseInt(code)) {
-        res.send('code verified successfully');
-    } else {
-        res.status(400).send('invalid code');
-
-    }
-});
+// Export the functions and tempCodes object
+module.exports = { generateCode, sendCodeEmail, tempCodes };
