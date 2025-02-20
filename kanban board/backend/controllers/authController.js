@@ -12,8 +12,11 @@ exports.login = async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
+  console.log(user);
+
   // fetch the stored password hash from the db
   const storedPasswordResult = await fetchPasswordByEmail(email);
+  console.log(storedPasswordResult);
   // check if a password has been returned
   if (!storedPasswordResult || storedPasswordResult.length === 0) {
     return res.status(401).json({ message: 'Invalid credentials' });
@@ -28,6 +31,12 @@ exports.login = async (req, res) => {
     return res.status(401).json({ message: 'Invalid credentials' });
   }
 
-  // allow the user to login
-  return res.json({ message: 'Login successful' });
+  console.log(user.role);
+
+  // allow user to log in (specifify if employee or admin)
+  if(user.role === "admin") {
+    return res.json({ message: 'Admin login successful' });
+  }
+
+  return res.json({ message: 'Employee login successful' });
 };
