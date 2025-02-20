@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { fetchUserByEmail, fetchPasswordByEmail } = require('../models/userModel');
 const { generateCode, sendCodeEmail, tempCodes } = require('./2faEmail.js');
 
@@ -34,22 +35,32 @@ exports.login = async (req, res) => {
   tempCodes[email] = code; // store the code
   sendCodeEmail(email, code);
 
-  // allow user to log in (specifify if employee or admin)
-  if(user.role === "admin") {
-    return res.json({ message: 'Admin login successful' });
-  }
-
-  return res.json({ message: 'Employee login successful' });
+  return res.json({ message: 'login successful' });
 };
 
 // Example verification endpoint (can be placed in authController or its own route file)
-exports.verifyCode = (req, res) => {
+exports.verifyCode = async (req, res) => {
   const { email, code } = req.body;
   
   // check that user has a code generated and that it matches
   if (tempCodes[email] && parseInt(code, 10) === tempCodes[email]) {
     delete tempCodes[email];  // delete code from temp storage
-    return res.json({ message: '2FA code correct' });
+
+    // fetch the user using email
+    const user = await fetchUserByEmail(email);
+    // generate jws token
+    // create a payload for the token
+    const payload = {
+      id: user.user_id,
+      role: user.role,
+    };
+
+    // sign the token with the secret key
+    const token = jwt.sign(payload, "KanbanSecretKey", {
+      expiresIn: '2h', 
+    });
+
+    return res.json({ message: '2FA code correct', token });
   } else {
     return res.status(400).json({ message: 'Invalid 2FA code' });
   }
