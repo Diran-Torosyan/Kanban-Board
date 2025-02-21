@@ -10,6 +10,7 @@ const Profile_Button: React.FC = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("token")
     navigate("/");
   };
 

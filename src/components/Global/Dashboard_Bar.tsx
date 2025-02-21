@@ -1,6 +1,10 @@
 import React from "react";
 
-const Dashboard_Bar: React.FC = () => {
+interface Props {
+    title: string;
+}
+
+const Dashboard_Bar: React.FC<Props> = ({title}) => {
   return (
     <div
       style={{
@@ -18,7 +22,7 @@ const Dashboard_Bar: React.FC = () => {
         fontFamily: "Helvetica, Arial, sans-serif",
       }}
     >
-      My Board
+      {title}
     </div>
   );
 };

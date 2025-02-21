@@ -44,16 +44,16 @@ const Task: React.FC<TaskProps> = ({ name, description }) => {
             <button
               style={{
                 backgroundColor: "white",
-                color: "#black",
                 padding: "0px 0px",
                 height: "40px",
                 border: "none",
                 borderRadius: "4px",
-                fontSize: ".6vw",
+                fontSize: ".7vw",
                 fontWeight: "bold",
+                color:"black",
                 fontFamily: "Helvetica, Arial, sans-serif",
                 cursor: "pointer",
-                width: "120px",
+                width: "130px",
               }}
               onClick={() => console.log("Submit for Approval")}
             >
