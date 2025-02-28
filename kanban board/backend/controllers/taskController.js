@@ -1,4 +1,4 @@
-const { fetchTaskByUser } = require('../models/taskModel.js');
+const { fetchTaskByUser, createTask, assignTask } = require('../models/taskModel.js');
 
 exports.getUserTasks = async (req, res) => {
   try {
@@ -10,5 +10,30 @@ exports.getUserTasks = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error fetching tasks' });
+  }
+};
+
+exports.makeTask = async (req, res) => {
+  try {
+    // create the task
+    const task = {
+      title: req.body.title,
+      description: req.body.description,
+      status: req.body.status,
+      due_date: req.body.due_date,
+      created_by: req.user.id,
+    }
+    const createdTask = await createTask(task);
+    
+    // assign the task
+    const assignedUsers = req.body.assignedUsers;
+    for(let i = 0; i < assignedUsers.length; i++) {
+      let task_assigned = await assignTask(createdTask, assignedUsers[i]);
+    }
+
+    res.status(201).json({ message: 'Task created and assigned successfully', task: createdTask });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error making task '});
   }
 };
