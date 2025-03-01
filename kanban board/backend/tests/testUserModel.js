@@ -142,12 +142,22 @@ const deleteUser = async (userId) => {
     }
 };
 
+// find a user by name
+const fetchUserByName = async (username) => {
+    try {
+        const user = await userModel.fetchUserByName(username);
+        console.log("Finding users with matching strings: ", user);
+    } catch (error) {
+        console.log("error finding users by name: ", error);
+    }
+}
+
 
 // Run Tests
 const runTests = async () => {
     console.log("\ntest results: \n");
 
-    await addUser("testsaccount", "testing@gmail.com", "password123", "IT", "compsci");
+    await addUser("adminAccount", "steve.martinez.149@my.csun.edu", "password123", "admin", "compsci");
     await fetchUserID("admin@gmail.com");
     await fetchPasswordByUserId(2);
     await fetchPasswordByEmail("admin@gmail.com");
@@ -161,6 +171,7 @@ const runTests = async () => {
     await updateDepartment(2, "art");
     await updateRole(2, "user");
     await deleteUser(3);
+    await fetchUserByName("jordan");
 
     console.log("\nAll tests executed.\n");
 };

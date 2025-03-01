@@ -267,6 +267,21 @@ const deleteUser = async (userId) => {
   }
 };
 
+// find users that match string given
+const fetchUserByName = async(username) => {
+    try {
+        const db = await getPool();
+        const result = await db.request()
+            .input("username", sql.NVarChar, username)
+            .query("SELECT * FROM [user] WHERE username LIKE '%' + @username + '%'");
+
+        return result.recordset;
+    } catch (err) {
+        console.log("Error finding user: ", err);
+        throw err;
+    }
+};
+
 // Export all db queries for task table
 module.exports = {
     addUser,
@@ -283,4 +298,5 @@ module.exports = {
     fetchUserByEmail,
     fetchUserByUserId,
     fetchPasswordByUsername,
+    fetchUserByName,
 };
