@@ -1,14 +1,11 @@
-const express = require('express');
+const { uploadDocument } = require('../models/documentModel.js');
 const multer = require('multer');
 const path = require('path');
-
-const app = express();
-const port = 3000;
 
 // Configure multer to specify where and how to store files
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './uploads/');  // File will be saved in the 'uploads' folder
+    cb(null, '../uploads/');  // File will be saved in the 'uploads' folder
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname)); // Rename the file to avoid conflicts
@@ -17,18 +14,22 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Middleware to serve static files (for HTML form)
-app.use(express.static('public'));
+exports.uploadMiddleware = upload.single('file');
 
-// Route to handle file upload
-app.post('/upload', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).send('No file uploaded.');
+exports.uploadDocument = async (req, res) => {
+  try {
+    // get fields from req
+    const taskId = req.body.taskId;
+    const filename = req.file.filename;
+    const originalFilename = req.file.originalname;
+    const userId = req.user.id; 
+
+    // Call the model function to store document metadata (versioning, etc.)
+    const documentId = await uploadDocument(taskId, userId, filename, originalFilename);
+    
+    res.status(201).json({ message: 'Document uploaded successfully', documentId });
+  } catch (err) {
+    console.error("Upload Document error:", err);
+    res.status(500).json({ message: 'Error uploading document' });
   }
-  res.send(`File uploaded successfully: ${req.file.filename}`);
-});
-
-// Start server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+};
