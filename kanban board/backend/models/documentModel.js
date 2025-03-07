@@ -33,24 +33,45 @@ const getPool = async () => {
     return pool;
 };
 
-// Call function to start the pool
+// call function to start the pool
 initializePool();
 
 // upload a document
-const uploadDocument = async (taskId, userId, file) => {
+const uploadDocument = async (taskId, userId, filename, originalFilename) => {
     try {
         const db = await getPool();
+        
+        // get the maximum version for this task and original filename
+        const versionResult = await db.request()
+            .input("taskId", sql.Int, taskId)
+            .input("originalFilename", sql.NVarChar, originalFilename)
+            .query(`
+                SELECT MAX(version) AS maxVersion 
+                FROM documents 
+                WHERE task_id = @taskId 
+                  AND original_filename = @originalFilename
+            `);
+        
+        // increment new version by 1, otherwise start at version 1 if its a new file
+        let version = 1;
+        if (versionResult.recordset.length > 0 && versionResult.recordset[0].maxVersion !== null) {
+            version = versionResult.recordset[0].maxVersion + 1;
+        }
+        
+        // Insert the new document record into the database with the new version info.
         const result = await db.request()
             .input("taskId", sql.Int, taskId)
             .input("userId", sql.Int, userId)
-            .input("file", sql.VarBinary(sql.MAX), file) 
+            .input("filename", sql.NVarChar, filename)
+            .input("originalFilename", sql.NVarChar, originalFilename)
+            .input("version", sql.Int, version)
             .query(`
-                INSERT INTO documents (task_id, uploaded_by, pdf_document, uploaded_on)
+                INSERT INTO documents (task_id, uploaded_by, uploaded_on, filename, original_filename, version)
                 OUTPUT INSERTED.document_id
-                VALUES (@taskId, @userId, @file, GETDATE())
+                VALUES (@taskId, @userId, GETDATE(), @filename, @originalFilename, @version)
             `);
-
-        return result.recordset[0].document_id; 
+        
+        return result.recordset[0].document_id;
     } catch (err) {
         console.error("Uploading document error: ", err);
         throw err;

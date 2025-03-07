@@ -16,6 +16,10 @@ app.use('/api', taskRoutes);
 const userRoutes = require('./routes/users.js');
 app.use('/api', userRoutes);
 
+// put all the file routes under /api
+const fileRoutes = require('./routes/files.js');
+app.use('/api', fileRoutes);
+
 // get the app running 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

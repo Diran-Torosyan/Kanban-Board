@@ -3,9 +3,9 @@ const documentModel = require("../models/documentModel.js");
 const fs = require("fs");
 
 // upload a document
-const testUploadDocument = async (taskId, userId, file) => {
+const testUploadDocument = async (taskId, userId, filename, originalFilename) => {
     try {
-        const document = await documentModel.uploadDocument(taskId, userId, file);
+        const document = await documentModel.uploadDocument(taskId, userId, filename, originalFilename);
         console.log("uploading document result: ", document);
     } catch (err) {
         console.log("upload documnet error: ", err);
@@ -64,17 +64,17 @@ const testUpdateDocument = async (documentId, userId, file) => {
 
 // Run Tests
 const runTests = async () => {
-    const fileBuffer = fs.readFileSync("./backend/tests/testfile.txt");
-    const secondFileBuffer = fs.readFileSync("./backend/tests/secondtestfile.txt");
+    //const fileBuffer = fs.readFileSync("./backend/tests/testfile.txt");
+    //const secondFileBuffer = fs.readFileSync("./backend/tests/secondtestfile.txt");
 
     console.log("\ntest results: \n");
 
-    await testUploadDocument(5, 1, fileBuffer);
+    await testUploadDocument(21, 11, "1234556897.pdf", "TitleXIFile.pdf");
     await testFetchDocumentsByTask(5);
     await testFetchDocumentById(3);
     await testDeleteDocument(2);
     await testFetchDocumentsByUser(1);
-    await testUpdateDocument(3, 1, secondFileBuffer);
+    //await testUpdateDocument(3, 1, secondFileBuffer);
 
     console.log("\nAll tests executed.\n");
 };
