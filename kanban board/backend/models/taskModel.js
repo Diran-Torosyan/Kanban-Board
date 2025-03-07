@@ -73,9 +73,13 @@ const fetchTaskByAdmin = async (userId) => {
         const db = await getPool();
         const result = await db.request()
             .input("createdBy", sql.Int, userId)
-            .query(`SELECT * 
+            .query(`SELECT 
+                tasks.*, 
+                u.username
                 FROM tasks
-                WHERE created_by = @createdBy`);
+                LEFT JOIN task_assigned ta ON tasks.task_id = ta.task_id
+                LEFT JOIN [user] u ON ta.user_id = u.user_id
+                WHERE tasks.created_by = @createdBy`);
         return result.recordset;
     } catch(err) {
         console.error("Error fetching task: ", err);
