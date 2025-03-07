@@ -10,6 +10,16 @@ const testFetchTaskById = async (id) => {
     }
 }
 
+// Get the a specific task by the task Id
+const testFetchTaskByAdmin = async (userid) => {
+    try {
+        const task = await taskModel.fetchTaskByAdmin(userid);
+        console.log("fetch task by admin result: ", task);
+    } catch (err) {
+        console.log("fetch task by admin error: ", err);
+    }
+}
+
 // Get the tasks that are assigned to the user
 const testFetchTaskByUser = async (user) => {
     try {
@@ -86,14 +96,13 @@ const runTests = async () => {
     console.log("\ntest results: \n");
 
     const newTask = {
-        title: "Manual Test Task",
+        title: "Test Task #6",
         description: "This is a test task created manually.",
-        status: "pending",
-        due_date: "2025-02-07",
-        created_by: 1 // Change to an existing user ID
+        status: "Completed",
+        due_date: "2025-05-10",
+        created_by: 9 // Change to an existing user ID
     };
-    await testCreateTask(newTask);
-
+    await testCreateTask(newTask);  
     const secondTask = {
         title: "Manual Test Task #2",
         description: "This is a test task created manually for the second time.",
@@ -101,12 +110,10 @@ const runTests = async () => {
         due_date: "2025-02-10",
         created_by: 1 // Change to an existing user ID
     };
-    await testCreateTask(secondTask);
-
+    await testCreateTask(secondTask);   
     await testFetchTaskById(4);
     await testFetchTaskByUser(1);
-    await testFetchTaskByUserAndStatus(1, "pending");
-
+    await testFetchTaskByUserAndStatus(1, "pending");   
     const updatedTask = {
         title: "Manual Test Task",
         description: "This is a test to see updated describtion.",
@@ -117,7 +124,8 @@ const runTests = async () => {
     await testUpdateTask(5, updatedTask);
     await testDeleteTask(4);
     await testUpdateTaskStatus(6, "done");
-    await testAssignTask(5, 1);
+    await testAssignTask(15, 8);
+    await testFetchTaskByAdmin(8);
 
     console.log("\nAll tests executed.\n");
 };

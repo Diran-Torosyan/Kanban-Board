@@ -1,4 +1,4 @@
-const { fetchTaskByUser, createTask, assignTask } = require('../models/taskModel.js');
+const { fetchTaskByUser, createTask, assignTask, fetchTaskByAdmin } = require('../models/taskModel.js');
 
 exports.getUserTasks = async (req, res) => {
   try {
@@ -35,5 +35,18 @@ exports.makeTask = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error making task '});
+  }
+};
+
+exports.getAdminTasks = async (req, res) => {
+  try {
+    // get admin id from the JWS token
+    const userId = req.user.id; 
+    // call the db to get the tasks for the admin
+    const tasks = await fetchTaskByAdmin(userId);
+    res.json({ tasks });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error fetching tasks for admin' });
   }
 };

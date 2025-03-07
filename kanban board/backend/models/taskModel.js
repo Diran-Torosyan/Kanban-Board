@@ -67,6 +67,22 @@ const fetchTaskByUser = async (userId) => {
     }
 }
 
+// Get the tasks that are created by the admin
+const fetchTaskByAdmin = async (userId) => {
+    try {
+        const db = await getPool();
+        const result = await db.request()
+            .input("createdBy", sql.Int, userId)
+            .query(`SELECT * 
+                FROM tasks
+                WHERE created_by = @createdBy`);
+        return result.recordset;
+    } catch(err) {
+        console.error("Error fetching task: ", err);
+        throw err; 
+    }
+}
+
 // Get the tasks by status and user
 const fetchTaskByUserAndStatus = async (userId, status) => {
     try {
@@ -188,5 +204,6 @@ module.exports = {
     updateTask,
     deleteTask,
     updateTaskStatus,
-    assignTask
+    assignTask,
+    fetchTaskByAdmin
 };
