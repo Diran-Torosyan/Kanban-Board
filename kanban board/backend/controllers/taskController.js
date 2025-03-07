@@ -1,4 +1,4 @@
-const { fetchTaskByUser, createTask, assignTask, fetchTaskByAdmin } = require('../models/taskModel.js');
+const { fetchTaskByUser, createTask, assignTask, fetchTaskByAdmin, deleteTask } = require('../models/taskModel.js');
 
 exports.getUserTasks = async (req, res) => {
   try {
@@ -50,3 +50,15 @@ exports.getAdminTasks = async (req, res) => {
     res.status(500).json({ message: 'Error fetching tasks for admin' });
   }
 };
+
+exports.deleteTask = async (req, res) => {
+  try {
+    //get task id from request
+    const taskId = req.body.taskId;
+    await deleteTask(taskId);
+    res.status(200).json({ message: 'Task deleted successfully'});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'deleting task error' });
+  }
+}
