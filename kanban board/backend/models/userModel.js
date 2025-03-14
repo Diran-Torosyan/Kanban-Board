@@ -282,6 +282,18 @@ const fetchUserByName = async(username) => {
     }
 };
 
+const fetchAllUsers = async () => {
+    try {
+      const db = await getPool();
+      const result = await db.request().query("SELECT * FROM [user]");  // This fetches all users
+      return result.recordset;
+    } catch (err) {
+      console.log("Error fetching all users: ", err);
+      throw err;
+    }
+};
+
+
 // Export all db queries for task table
 module.exports = {
     addUser,
@@ -299,4 +311,5 @@ module.exports = {
     fetchUserByUserId,
     fetchPasswordByUsername,
     fetchUserByName,
+    fetchAllUsers,
 };
