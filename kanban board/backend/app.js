@@ -4,6 +4,8 @@ const app = express();
 // make json files into js objects (req.body)
 app.use(express.json());
 
+const cors = require('cors');
+app.use(cors());
 // put all the authentication routes under /api
 const authRoutes = require('./routes/auth.js');
 app.use('/api', authRoutes);
