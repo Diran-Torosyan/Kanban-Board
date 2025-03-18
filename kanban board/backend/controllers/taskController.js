@@ -1,4 +1,6 @@
 const { fetchTaskByUser, createTask, assignTask, fetchTaskByAdmin, deleteTask } = require('../models/taskModel.js');
+const { fetchUserByUserId } = require('../models/userModel.js');
+const { sendNotificationEmail, createTaskAssignedEmail } = require('./2faEmail.js');
 
 exports.getUserTasks = async (req, res) => {
   try {
@@ -25,10 +27,19 @@ exports.makeTask = async (req, res) => {
     }
     const createdTask = await createTask(task);
     
+    //get admin information
+    const tempAdmin = await fetchUserByUserId(req.user.id);
+    const admin = {
+      name: tempAdmin.username,
+      email: tempAdmin.email,
+    };
+
     // assign the task
     const assignedUsers = req.body.assignedUsers;
     for(let i = 0; i < assignedUsers.length; i++) {
       let task_assigned = await assignTask(createdTask, assignedUsers[i]);
+      let user = await fetchUserByUserId(assignedUsers[i]);
+      sendNotificationEmail(user.email, `Task Alert: ${task.title} has been assigned to you`, createTaskAssignedEmail(user.username, task, admin));
     }
 
     res.status(201).json({ message: 'Task created and assigned successfully', task: createdTask });
