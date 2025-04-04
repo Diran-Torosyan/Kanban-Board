@@ -1,23 +1,32 @@
 import React, { useState } from "react";
+import { useDrag } from "react-dnd";
 
-// Add dueDate to TaskProps
 interface TaskProps {
+  id: string;
   title: string;
   description: string;
-  due_date: string; // Add dueDate as a prop
+  due_date: string;
+  columnId: number; 
 }
 
-const Task: React.FC<TaskProps> = ({ title, description, due_date }) => {
+const Task: React.FC<TaskProps> = ({ id, title, description, due_date, columnId }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Check if dueDate is valid
   const due_dateObj = new Date(due_date);
-  const formattedDueDate = due_dateObj instanceof Date && !isNaN(due_dateObj.getTime()) 
-    ? due_dateObj.toLocaleDateString() 
-    : "No Due Date"; // Handle invalid or missing dueDate
-
+  const formattedDueDate =
+    due_dateObj instanceof Date && !isNaN(due_dateObj.getTime())
+      ? due_dateObj.toLocaleDateString()
+      : "No Due Date";
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: "TASK",
+    item: { id, columnId }, // The item we're dragging (task id and column id)
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  }));
   return (
     <div
+      ref={drag}
       style={{
         backgroundColor: "#CFCFCF",
         padding: "7px",
@@ -28,10 +37,11 @@ const Task: React.FC<TaskProps> = ({ title, description, due_date }) => {
         fontSize: "1.2vw",
         fontWeight: "bold",
         fontFamily: "Helvetica, Arial, sans-serif",
-        cursor: "pointer",
+        cursor: "move",
         maxWidth: isHovered ? "100%" : "100%",
         transform: isHovered ? "scale(1.1)" : "scale(1)",
         boxShadow: isHovered ? "0 4px 10px rgba(0, 0, 0, 0.3)" : "none",
+        opacity: isDragging ? 0.5 : 1,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -42,8 +52,10 @@ const Task: React.FC<TaskProps> = ({ title, description, due_date }) => {
           <div style={{ textAlign: "left", fontSize: ".75vw" }}>
             Description: {description}
           </div>
-          <div style={{ textAlign: "left", fontSize: ".75vw", marginTop: "10px" }}>
-            Due Date: {formattedDueDate} {/* Display the dueDate */}
+          <div
+            style={{ textAlign: "left", fontSize: ".75vw", marginTop: "10px" }}
+          >
+            Due Date: {formattedDueDate}
           </div>
           <div
             style={{

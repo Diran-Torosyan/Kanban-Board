@@ -3,13 +3,15 @@ import Landing_Header from "../../components/Global/Landing_Header";
 import Dashboard_Bar from "../../components/Global/Dashboard_Bar";
 import Column from "../../components/Global/Columns";
 import { jwtDecode } from "jwt-decode";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const token = localStorage.getItem("token");
 let userId = null;
 
 if (token) {
-  const decodedToken = jwtDecode<{ id: string }>(token); // Updated to reflect the new `id` field
-  userId = decodedToken.id; // Access `id` from the decoded token
+  const decodedToken = jwtDecode<{ id: string }>(token);
+  userId = decodedToken.id;
 }
 
 const Employee_Landing: React.FC = () => {
@@ -34,7 +36,9 @@ const Employee_Landing: React.FC = () => {
         });
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch tasks, Status Code: ${response.status}`);
+          throw new Error(
+            `Failed to fetch tasks, Status Code: ${response.status}`
+          );
         }
 
         const data = await response.json();
@@ -44,12 +48,14 @@ const Employee_Landing: React.FC = () => {
         }
 
         if (Array.isArray(data.tasks)) {
-          setTasks(data.tasks); // If it's an array, set it directly
+          setTasks(data.tasks); // If it's an array, set tasks
         } else if (typeof data.tasks === "object") {
           data.tasks = Object.values(data.tasks); // Convert object to array
           setTasks(data.tasks);
         } else {
-          throw new Error("Data format error: tasks should be an array or an object.");
+          throw new Error(
+            "Data format error: tasks should be an array or an object."
+          );
         }
 
         setLoading(false);
@@ -62,8 +68,8 @@ const Employee_Landing: React.FC = () => {
 
     fetchTasks();
   }, [token]);
-
-  // Define your columns based on task statuses
+  
+  // Defines Columns
   const columns = [
     {
       id: 1,
@@ -82,11 +88,12 @@ const Employee_Landing: React.FC = () => {
     },
   ];
 
-  // Render loading or error message
+  // error or loading message
   if (loading) return <div>Loading tasks...</div>;
   if (error) return <div>{error}</div>;
 
   return (
+    <DndProvider backend={HTML5Backend}>
     <div>
       <Landing_Header />
       <Dashboard_Bar title="My Board" />
@@ -108,6 +115,7 @@ const Employee_Landing: React.FC = () => {
         ))}
       </div>
     </div>
+    </DndProvider>
   );
 };
 
