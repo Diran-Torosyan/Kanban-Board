@@ -1,4 +1,4 @@
-const { fetchTaskByUser, createTask, assignTask, fetchTaskByAdmin, deleteTask } = require('../models/taskModel.js');
+const { fetchTaskByUser, createTask, assignTask, fetchTaskByAdmin, deleteTask, updateTaskStatus } = require('../models/taskModel.js');
 const { fetchUserByUserId } = require('../models/userModel.js');
 const { sendNotificationEmail, createTaskAssignedEmail } = require('./2faEmail.js');
 
@@ -72,4 +72,19 @@ exports.deleteTask = async (req, res) => {
     console.log(err);
     res.status(500).json({ error: 'deleting task error' });
   }
-}
+};
+
+// update the status of a task
+exports.updateTaskStatus = async (req, res) => {
+  try {
+    //get task id and new status from request
+    const taskId = req.body.taskId;
+    const taskStatus = req.body.status;
+    await updateTaskStatus(taskId, taskStatus);
+    res.status(200).json({ message: 'Task status updated' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'updating task error' });
+  }
+};
+
