@@ -34,7 +34,7 @@ exports.approveTask = async (req, res) => {
         }
 
         const taskId = req.body.taskId;
-        const approvedTask = await updateTaskStatus(taskId, "approved");
+        const approvedTask = await updateTaskStatus(taskId, "Approved");
 
         res.status(200).json({ message: 'Task approved' });
     } catch (err) {
