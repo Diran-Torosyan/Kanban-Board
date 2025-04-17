@@ -22,6 +22,10 @@ app.use('/api', userRoutes);
 const fileRoutes = require('./routes/files.js');
 app.use('/api', fileRoutes);
 
+// putt all the notification routes under /api
+const notiRoutes = require('./routes/notifications.js');
+app.use('/api', notiRoutes);
+
 // get the app running 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

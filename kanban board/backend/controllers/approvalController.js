@@ -1,6 +1,7 @@
-const { fetchTaskById, updateTaskStatus } = require('../models/taskModel.js');
+const { fetchTaskById, updateTaskStatus, fetchUserAssignedToTask } = require('../models/taskModel.js');
 const { fetchUserByUserId } = require('../models/userModel.js');
 const { sendNotificationEmail, createTaskProgressUpdateEmail } = require('./2faEmail.js');
+const { createNotification } = require('../models/notificationModel.js');
 
 exports.updateTask = async (req, res) => {
     try {
@@ -18,6 +19,7 @@ exports.updateTask = async (req, res) => {
         const admin = await fetchUserByUserId(task.created_by);
         const user = await fetchUserByUserId(req.user.id);
         sendNotificationEmail(admin.email, `Task Alert: ${task.title} status has changed`, createTaskProgressUpdateEmail(admin.username, task, user.username));
+        await createNotification(task.created_by, 'Task Update', `Task "${task.title}" status is now "${newStatus}"`);
 
         res.status(200).json({ message: 'Task status updated successfully', task: task });
     } catch (err) {
@@ -35,6 +37,9 @@ exports.approveTask = async (req, res) => {
 
         const taskId = req.body.taskId;
         const approvedTask = await updateTaskStatus(taskId, "Approved");
+        const task = await fetchTaskById(taskId);
+        const taskAssigned = await fetchUserAssignedToTask(taskId);
+        await createNotification(taskAssigned[0].user_id, 'Task Update', `Task "${task.title}" status is now "${task.status}"`);
 
         res.status(200).json({ message: 'Task approved' });
     } catch (err) {
