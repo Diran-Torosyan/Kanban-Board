@@ -1,4 +1,4 @@
-const { uploadDocument, fetchDocumentById } = require('../models/documentModel.js');
+const { uploadDocument, fetchDocumentById, fetchDocumentsByTask } = require('../models/documentModel.js');
 const multer = require('multer');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const path = require('path');
@@ -78,5 +78,18 @@ exports.downloadDocument = async (req, res) => {
   } catch (err) {
     console.error('Error downloading document:', err);
     res.status(500).json({ message: 'Error downloading document' });
+  }
+};
+
+exports.getDocumentIdForTask = async (req, res) => {
+  try {
+    const taskId = req.body.taskId;
+    const docs = await fetchDocumentsByTask(taskId);
+    const newestDoc = docs[0];
+
+    res.status(200).json({ message: 'Newest document fetched', documentId: newestDoc.document_id });
+  } catch (err) {
+    console.error('Error getting document id:', err);
+    res.status(500).json({ message: 'Error getting document id' });
   }
 };

@@ -84,8 +84,8 @@ const fetchDocumentsByTask = async (taskId) => {
         const db = await getPool();
         const result = await db.request()
         .input("taskId", sql.Int, taskId)
-        .query("SELECT * FROM documents WHERE task_id = @taskId");
-        return result.recordset[0];
+        .query("SELECT * FROM documents WHERE task_id = @taskId ORDER BY version DESC");
+        return result.recordset;
     } catch (err) {
         console.error("Fetching document error: ", err);
         throw err;
