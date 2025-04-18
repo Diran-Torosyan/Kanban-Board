@@ -22,9 +22,13 @@ app.use('/api', userRoutes);
 const fileRoutes = require('./routes/files.js');
 app.use('/api', fileRoutes);
 
-// putt all the notification routes under /api
+// put all the notification routes under /api
 const notiRoutes = require('./routes/notifications.js');
 app.use('/api', notiRoutes);
+
+//put all the comments routes under /api
+const commentsRoutes = require('./routes/comments.js');
+app.use('/api', commentsRoutes);
 
 // get the app running 
 const PORT = process.env.PORT || 3000;
