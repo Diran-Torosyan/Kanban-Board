@@ -1,4 +1,4 @@
-const { createNotification, fetchNotificationsByUser, markNotificationAsRead } = require("../models/notificationModel.js");
+const { createNotification, fetchNotificationsByUser, markNotificationAsRead, getUnreadCountByUser } = require("../models/notificationModel.js");
 const { fetchTaskById } = require("../models/taskModel.js")
 
 exports.createNotification = async (req, res) => {
@@ -36,5 +36,16 @@ exports.markNotificationAsRead = async (req, res) => {
     } catch (err) {
         console.error('Error marking notidication as read:', err);
         res.status(500).json({ message: 'Error marking notification as read' });
+    }
+};
+
+exports.fetchUnreadNotificationsNumByUser = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const notiNum = await getUnreadCountByUser(userId);
+        res.status(200).json({ message: "Unread Notifaction number fetched successfully", notiNum});
+    } catch (err) {
+        console.error("Error fetching unread notifications number", err);
+        res.status(500).json({ message: "Error fetching unread notifications number" });
     }
 };

@@ -94,8 +94,27 @@ const markNotificationAsRead = async (notificationId) => {
     }
 };
 
+const getUnreadCountByUser = async (userId) => {
+    try {
+      const db = await getPool();
+      const result = await db.request()
+        .input('userId', sql.Int, userId)
+        .query(`
+          SELECT COUNT(*) AS unreadCount
+          FROM notifications
+          WHERE user_id = @userId
+            AND is_read = 0
+        `);
+      return result.recordset[0].unreadCount;
+    } catch (err) {
+      console.error('Error fetching unread notification count:', err);
+      throw err;
+    }
+};
+
 module.exports = {
     createNotification,
     fetchNotificationsByUser,
-    markNotificationAsRead
+    markNotificationAsRead,
+    getUnreadCountByUser
 };
