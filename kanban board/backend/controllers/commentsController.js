@@ -2,7 +2,7 @@ const { getCommentByTask, addComment, updateComment, deleteComment } = require('
 
 exports.getTaskComments = async (req, res) => {
     try {
-        const taskId = req.body.taskId;
+        const taskId = req.query.taskId;
         const comments = await getCommentByTask(taskId);
         res.status(200).json({message: "Comments for task retrieved", comments: comments});
     } catch (err) {
@@ -13,7 +13,7 @@ exports.getTaskComments = async (req, res) => {
 
 exports.getRecentComment = async (req, res) => {
     try {
-        const taskId = req.body.taskId;
+        const taskId = req.query.taskId;
         const comments = await getCommentByTask(taskId);
         res.status(200).json({message: "Most recent comment for task retrieved", comment: comments.recordset[0]});
     } catch (err) {
