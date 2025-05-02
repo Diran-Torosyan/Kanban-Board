@@ -7,21 +7,25 @@ interface TaskType {
   title: string;
   description: string;
   due_date: string;
+  status:string;
 }
 
 interface ColumnProps {
   id: number;
   title: string;
   tasks: TaskType[];
+  onTaskDrop: (taskId: string, columnId: number) => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ id, title, tasks }) => {
+const Column: React.FC<ColumnProps> = ({ id, title, tasks, onTaskDrop }) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: "TASK",
     drop: (item: { id: string; columnId: number }) => {
       if (item.columnId !== id) {
         // Handle the task movement here
         console.log(`Task ${item.id} moved to column ${id}`);
+        onTaskDrop(item.id, id); // Now calling the backend
+        item.columnId = id;
       }
     },
     collect: (monitor) => ({
@@ -31,7 +35,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks }) => {
   }));
   return (
     <div
-      ref= {drop}
+      ref={drop}
       style={{
         backgroundColor: "#EAEAEA",
         padding: "15px",
@@ -69,11 +73,12 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks }) => {
         {tasks.map((task, index) => (
           <Task
             key={index}
-            id={task.id}
+            id={task.task_id}
             columnId={id}
             title={task.title}
             description={task.description}
             due_date={task.due_date}
+            status={task.status}
           />
         ))}
       </div>
