@@ -60,7 +60,7 @@ const getCommentByTask = async (taskId) => {
         const db = await getPool();
         const result = await db.request()
         .input("taskId", sql.Int, taskId)
-        .query("SELECT * FROM comments WHERE task_id = @taskId");
+        .query("SELECT * FROM comments WHERE task_id = @taskId ORDER BY created_at DESC");
         return result;
     } catch (err) {
         console.error("Getting comments error: ", err);
@@ -83,17 +83,15 @@ const getCommentByUser = async (userId) => {
 };
 
 // Updata a comment
-const updateComment = async (commentId, taskId, userId, content) => {
+const updateComment = async (commentId, content) => {
     try {
         const db = await getPool();
         const result = await db.request()
         .input("commentId", sql.Int, commentId)
-        .input("taskId", sql.Int, taskId)
-        .input("userId", sql.Int, userId)
         .input("content", sql.NVarChar, content)
         .query(`
             UPDATE comments
-            SET task_id = @taskId, user_id = @userId, content = @content, created_at = GETDATE()
+            SET content = @content, created_at = GETDATE()
             WHERE comment_id = @commentId
         `);
         return result.rowsAffected[0];

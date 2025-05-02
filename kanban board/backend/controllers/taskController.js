@@ -1,6 +1,7 @@
-const { fetchTaskByUser, createTask, assignTask, fetchTaskByAdmin, deleteTask } = require('../models/taskModel.js');
+const { fetchTaskByUser, createTask, assignTask, fetchTaskByAdmin, deleteTask, updateTaskStatus } = require('../models/taskModel.js');
 const { fetchUserByUserId } = require('../models/userModel.js');
 const { sendNotificationEmail, createTaskAssignedEmail } = require('./2faEmail.js');
+const { createNotification } = require('../models/notificationModel.js');
 
 exports.getUserTasks = async (req, res) => {
   try {
@@ -40,6 +41,7 @@ exports.makeTask = async (req, res) => {
       let task_assigned = await assignTask(createdTask, assignedUsers[i]);
       let user = await fetchUserByUserId(assignedUsers[i]);
       sendNotificationEmail(user.email, `Task Alert: ${task.title} has been assigned to you`, createTaskAssignedEmail(user.username, task, admin));
+      await createNotification(user.user_id, 'Task Creation', `Task "${task.title}" has been created and assigned to you.`);
     }
 
     res.status(201).json({ message: 'Task created and assigned successfully', task: createdTask });
@@ -72,4 +74,19 @@ exports.deleteTask = async (req, res) => {
     console.log(err);
     res.status(500).json({ error: 'deleting task error' });
   }
-}
+};
+
+// update the status of a task
+exports.updateTaskStatus = async (req, res) => {
+  try {
+    //get task id and new status from request
+    const taskId = req.body.taskId;
+    const taskStatus = req.body.status;
+    await updateTaskStatus(taskId, taskStatus);
+    res.status(200).json({ message: 'Task status updated' });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: 'updating task error' });
+  }
+};
+

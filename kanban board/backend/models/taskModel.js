@@ -199,6 +199,19 @@ const assignTask = async (taskId, userId) => {
     }
 };
 
+const fetchUserAssignedToTask = async (taskId) => {
+    try {
+        const db = await getPool();
+        const result = await db.request()
+            .input('taskId', sql.Int, taskId)
+            .query("SELECT * FROM task_assigned WHERE task_id = @taskId");
+        return result.recordset;
+    } catch (err) {
+        console.error("Error fethching user assigned to task: ", err);
+        throw err;
+    }
+};
+
 // Export all db queries for task table
 module.exports = {
     fetchTaskById,
@@ -209,5 +222,6 @@ module.exports = {
     deleteTask,
     updateTaskStatus,
     assignTask,
-    fetchTaskByAdmin
+    fetchTaskByAdmin,
+    fetchUserAssignedToTask
 };
