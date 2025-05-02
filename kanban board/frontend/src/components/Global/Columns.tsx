@@ -22,9 +22,8 @@ const Column: React.FC<ColumnProps> = ({ id, title, tasks, onTaskDrop }) => {
     accept: "TASK",
     drop: (item: { id: string; columnId: number }) => {
       if (item.columnId !== id) {
-        // Handle the task movement here
         console.log(`Task ${item.id} moved to column ${id}`);
-        onTaskDrop(item.id, id); // Now calling the backend
+        onTaskDrop(item.id, id);
         item.columnId = id;
       }
     },

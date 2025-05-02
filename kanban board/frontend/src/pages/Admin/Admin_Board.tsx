@@ -7,13 +7,13 @@ import { useNavigate } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-// Get the token and extract user ID from it
+//Get the token and extract user ID from it
 const token = localStorage.getItem("token");
 
 let userId = null;
 if (token) {
-  const decodedToken = jwtDecode<{ id: string }>(token); // Updated to reflect the new `id` field
-  userId = decodedToken.id; // Access `id` from the decoded token
+  const decodedToken = jwtDecode<{ id: string }>(token);
+  userId = decodedToken.id; 
 }
 
 const Admin_Board: React.FC = () => {
@@ -169,7 +169,7 @@ const fetchTasks = async () => {
     }
   };
 
-  // Define your columns based on task statuses
+  //Defines columns based on task statuses
   const columns = [
     {
       id: 1,

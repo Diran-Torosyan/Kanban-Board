@@ -22,7 +22,7 @@ const Task: React.FC<TaskProps> = ({ id, title, description, due_date, columnId,
       : "No Due Date";
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "TASK",
-    item: { id, columnId }, // The item we're dragging (task id and column id)
+    item: { id, columnId },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -110,10 +110,10 @@ const Task: React.FC<TaskProps> = ({ id, title, description, due_date, columnId,
   };
   const borderColor =
   status === "Awaiting Approval"
-    ? "#FFD700" // Yellow
+    ? "#FFD700" //Yellow
     : status === "Approved"
-    ? "#28a745" // Green
-    : "#000000"; // Default black
+    ? "#28a745" //Green
+    : "#000000"; //Default black
   return (
     <div
       ref={drag}
@@ -180,24 +180,6 @@ const Task: React.FC<TaskProps> = ({ id, title, description, due_date, columnId,
                 </ul>
               )}
             </div>
-            {/*<button
-              style={{
-                backgroundColor: "white",
-                padding: "0px 0px",
-                height: "40px",
-                border: "none",
-                borderRadius: "4px",
-                fontSize: ".7vw",
-                fontWeight: "bold",
-                color: "black",
-                fontFamily: "Helvetica, Arial, sans-serif",
-                cursor: "pointer",
-                width: "130px",
-              }}
-              onClick={() => console.log("Submit for Approval")}
-            >
-              Submit for Approval
-            </button>*/}
             <button
               style={{
                 backgroundColor: "white",

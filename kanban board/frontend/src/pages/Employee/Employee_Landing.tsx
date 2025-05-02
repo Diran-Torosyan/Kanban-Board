@@ -141,7 +141,7 @@ const Employee_Landing: React.FC = () => {
 
   
   
-  // Defines Columns
+  //Defines Columns
   const columns = [
     {
       id: 1,
@@ -160,7 +160,7 @@ const Employee_Landing: React.FC = () => {
     },
   ];
 
-  // error or loading message
+  //error or loading message
   if (loading) return <div>Loading tasks...</div>;
   if (error) return <div>{error}</div>;
 

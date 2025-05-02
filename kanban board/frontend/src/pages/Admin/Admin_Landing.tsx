@@ -127,7 +127,7 @@ const Admin_Landing: React.FC = () => {
   };
   
 
-  // Fetch employees
+  //Fetch employees
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -159,7 +159,7 @@ const Admin_Landing: React.FC = () => {
     }
   }, []);
 
-  // Fetch tasks 
+  //Fetch tasks 
   const fetchTasks = async () => {
     const token = localStorage.getItem("token");
 
@@ -203,7 +203,7 @@ const Admin_Landing: React.FC = () => {
     }
   };
 
-  // Run fetchTasks
+  //Run fetchTasks
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -315,7 +315,7 @@ const Admin_Landing: React.FC = () => {
         if (file) {
           const formData = new FormData();
           formData.append("file", file);
-          formData.append("taskId", createdTask.toString()); // Link the file to the created task
+          formData.append("taskId", createdTask.toString()); //Link the file to the created task
   
           const fileResponse = await fetch("http://localhost:3000/api/upload-document", {
             method: "POST",
@@ -367,7 +367,7 @@ const Admin_Landing: React.FC = () => {
         console.error("No token found");
         return;
       }
-      // Get document ID
+      //Get document ID
       const docIdResponse = await fetch(`http://localhost:3000/api/get-doc-id?taskId=${taskId}`, {
         method: "GET",
         headers: {
@@ -386,7 +386,7 @@ const Admin_Landing: React.FC = () => {
         throw new Error("No document ID found for this task");
       }
 
-      // Download document
+      //Download document
       const downloadResponse = await fetch(`http://localhost:3000/api/download-document?documentId=${documentId}`, {
         method: "GET",
         headers: {
@@ -419,7 +419,7 @@ const Admin_Landing: React.FC = () => {
   
   
 
-  // Handle removing a task
+  //Handle removing a task
   const handleRemoveTask = (taskId: number, category: string) => {
     setTaskToRemove({ taskId, category });
     console.log(taskId);
@@ -592,8 +592,8 @@ const Admin_Landing: React.FC = () => {
                 setFile(e.target.files ? e.target.files[0] : null);
               }}
             />
-            <button onClick={handleAddTask}>Add Task</button>
-            <button onClick={() => setIsTaskModalOpen(false)}>Cancel</button>
+            <button onClick={handleAddTask} style={{marginTop: "10px"}}>Add Task</button>
+            <button onClick={() => setIsTaskModalOpen(false)} style={{marginTop: "5px"}}>Cancel</button>
           </div>
         </div>
       )}

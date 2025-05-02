@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 interface Notification {
   notification_id: string;
   message: string;
-  is_read: boolean; // Ensure this is the correct field for unread status
+  is_read: boolean;
 }
 
 const Notification_Button: React.FC = () => {
@@ -58,7 +58,7 @@ const Notification_Button: React.FC = () => {
       if (!res.ok) throw new Error("Failed to fetch unread count");
       const data = await res.json();
       console.log("Number of unread Notifications: " + JSON.stringify(data));
-      setUnreadCount(data.notiNum || 0);  // Assuming the response has { unreadCount: number }
+      setUnreadCount(data.notiNum || 0);
     } catch (err) {
       console.error("Error fetching unread count:", err);
       setUnreadCount(0);
@@ -66,8 +66,8 @@ const Notification_Button: React.FC = () => {
   };
   useEffect(() => {
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000); // every 30s
-    return () => clearInterval(interval); // cleanup on unmount
+    const interval = setInterval(fetchUnreadCount, 30000); //refreshes every 30s
+    return () => clearInterval(interval);
   }, []);
 
   const markAsRead = async (notification_id: string) => {
@@ -173,7 +173,7 @@ const Notification_Button: React.FC = () => {
           ) : (
             notifications.map((notification) => (
               <div
-                key={notification.notification_id} // Correct field for key
+                key={notification.notification_id}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -189,7 +189,7 @@ const Notification_Button: React.FC = () => {
                 </span>
                 <input
                   type="checkbox"
-                  onChange={() => markAsRead(notification.notification_id)} // Correct field for notificationId
+                  onChange={() => markAsRead(notification.notification_id)}
                   title="Mark as read"
                 />
               </div>
