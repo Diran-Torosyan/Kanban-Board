@@ -8,7 +8,7 @@ const { getCommentByTask, addComment, updateComment, deleteComment } = require('
  */
 exports.getTaskComments = async (req, res) => {
     try {
-        const taskId = req.body.taskId;
+        const taskId = req.query.taskId;
         const comments = await getCommentByTask(taskId);
         res.status(200).json({message: "Comments for task retrieved", comments: comments});
     } catch (err) {
