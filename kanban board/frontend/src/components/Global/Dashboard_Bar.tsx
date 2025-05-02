@@ -1,26 +1,26 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { useNavigate } from "react-router-dom"; 
 
 interface Props {
   title: string;
-  showButton?: boolean; // Optional prop to conditionally show the button
-  buttonLabel?: string; // Optional prop to customize the button label
-  onButtonClick?: () => void; // Optional prop for the button click handler
+  showButton?: boolean; 
+  buttonLabel?: string; 
+  onButtonClick?: () => void; 
 }
 
 const Dashboard_Bar: React.FC<Props> = ({
   title,
   showButton = false,
-  buttonLabel = "Go", // Default label for the button
-  onButtonClick, // Function to handle button click
+  buttonLabel = "Go", 
+  onButtonClick, 
 }) => {
   const navigate = useNavigate();
 
   const handleNavigateToAdminLanding = () => {
-    navigate("/admin-landing"); // Navigate to the Admin Landing page
+    navigate("/admin-landing");
   };
 
-  // Fallback to default behavior if onButtonClick is not provided
+  
   const handleButtonClick = onButtonClick || handleNavigateToAdminLanding;
 
   return (
@@ -41,7 +41,6 @@ const Dashboard_Bar: React.FC<Props> = ({
       }}
     >
       <div>{title}</div>
-      {/* Conditionally render the button */}
       {showButton && (
         <button
           onClick={handleButtonClick}
@@ -57,7 +56,7 @@ const Dashboard_Bar: React.FC<Props> = ({
           fontFamily: "Helvetica, Arial, sans-serif",
           }}
         >
-          {buttonLabel} {/* Display dynamic label */}
+          {buttonLabel}
         </button>
       )}
     </div>

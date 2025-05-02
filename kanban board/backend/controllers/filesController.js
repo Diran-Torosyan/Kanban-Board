@@ -74,7 +74,7 @@ exports.uploadDocument = async (req, res) => {
  */
 exports.downloadDocument = async (req, res) => {
   try {
-    const documentId = req.body.documentId;
+    const documentId = req.query.documentId;
     const doc = await fetchDocumentById(documentId);
 
     const blobClient = containerClient.getBlockBlobClient(doc.filename);
@@ -104,7 +104,7 @@ exports.downloadDocument = async (req, res) => {
  */
 exports.getDocumentIdForTask = async (req, res) => {
   try {
-    const taskId = req.body.taskId;
+    const taskId = req.query.taskId;
     const docs = await fetchDocumentsByTask(taskId);
     const newestDoc = docs[0];
 

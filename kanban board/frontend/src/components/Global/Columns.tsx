@@ -1,21 +1,40 @@
 import React from "react";
 import Task from "./Task";
+import { useDrop } from "react-dnd";
 
-// Update TaskType to include dueDate
 interface TaskType {
+  id: string;
   title: string;
   description: string;
-  due_date: string; // Add dueDate field
+  due_date: string;
+  status:string;
 }
 
 interface ColumnProps {
+  id: number;
   title: string;
   tasks: TaskType[];
+  onTaskDrop: (taskId: string, columnId: number) => void;
 }
 
-const Column: React.FC<ColumnProps> = ({ title, tasks }) => {
+const Column: React.FC<ColumnProps> = ({ id, title, tasks, onTaskDrop }) => {
+  const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    accept: "TASK",
+    drop: (item: { id: string; columnId: number }) => {
+      if (item.columnId !== id) {
+        console.log(`Task ${item.id} moved to column ${id}`);
+        onTaskDrop(item.id, id);
+        item.columnId = id;
+      }
+    },
+    collect: (monitor) => ({
+      canDrop: monitor.canDrop(),
+      isOver: monitor.isOver(),
+    }),
+  }));
   return (
     <div
+      ref={drop}
       style={{
         backgroundColor: "#EAEAEA",
         padding: "15px",
@@ -50,13 +69,15 @@ const Column: React.FC<ColumnProps> = ({ title, tasks }) => {
           gap: "15px",
         }}
       >
-        {/* Pass dueDate to each Task component */}
         {tasks.map((task, index) => (
           <Task
             key={index}
+            id={task.task_id}
+            columnId={id}
             title={task.title}
             description={task.description}
-            due_date={task.due_date} // Pass dueDate as a prop
+            due_date={task.due_date}
+            status={task.status}
           />
         ))}
       </div>

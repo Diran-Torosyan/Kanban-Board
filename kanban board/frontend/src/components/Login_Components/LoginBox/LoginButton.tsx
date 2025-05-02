@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // Corrected import
+import { jwtDecode } from "jwt-decode";
 
-// Extend the JwtPayload interface to include the 'role' field
+
 interface CustomJwtPayload {
   role: string;
 }
@@ -66,9 +66,9 @@ const LoginButton: React.FC = () => {
         setSuccess("2FA code correct");
         localStorage.setItem("token", data.token);
         console.log(success);
-        //console.log(data.token);
+        
 
-        // Decode the token with the custom type
+        
         const decodedToken = jwtDecode<CustomJwtPayload>(data.token);
         const userRole = decodedToken.role
 

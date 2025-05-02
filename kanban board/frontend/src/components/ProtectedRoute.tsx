@@ -28,7 +28,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
       return <Navigate to="/unauthorized" replace />;
     }
 
-    return <Outlet />; // Render child routes
+    return <Outlet />; 
 
   } catch {
     localStorage.removeItem("token");

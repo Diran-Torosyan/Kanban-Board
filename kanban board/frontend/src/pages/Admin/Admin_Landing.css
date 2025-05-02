@@ -144,8 +144,8 @@ textarea:focus {
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: white;  /* Make sure the background is white */
-  color: #333;  /* Set text color to dark */
+  background-color: white;  
+  color: #333;  
 }
 
 /* Style for the dropdown result container */
@@ -154,13 +154,13 @@ textarea:focus {
   top: 100%;
   left: 0;
   right: 0;
-  background-color: white;  /* White background */
-  border: 1px solid #ccc;  /* Border color for the dropdown */
+  background-color: white;  
+  border: 1px solid #ccc;  
   max-height: 200px;
   overflow-y: auto;
   z-index: 100;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  /* Optional: shadow for better visibility */
-  border-radius: 4px;  /* Optional: rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  
+  border-radius: 4px;  
 }
 
 /* Style for each individual result in the dropdown */
@@ -168,8 +168,8 @@ textarea:focus {
   padding: 8px;
   cursor: pointer;
   font-size: 12px;
-  background-color: white;  /* Ensure each item has a white background */
-  color: #333;  /* Dark text color */
+  background-color: white;  
+  color: #333;  
 }
 
 /* Highlight item when hovered */
@@ -179,7 +179,7 @@ textarea:focus {
 
 /* Style for the selected employee */
 .selected {
-  background-color: #cce7ff;  /* Light blue background for selected item */
+  background-color: #cce7ff;  
   font-weight: bold;
 }
 

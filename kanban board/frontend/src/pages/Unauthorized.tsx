@@ -10,7 +10,7 @@ const Unauthorized: React.FC = () => {
     if (location.key !== "default") {
       navigate(-1);
     } else {
-      navigate("/"); // Fallback if no previous page is found
+      navigate("/"); 
     }
   };
 
