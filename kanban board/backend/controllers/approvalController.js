@@ -3,6 +3,13 @@ const { fetchUserByUserId } = require('../models/userModel.js');
 const { sendNotificationEmail, createTaskProgressUpdateEmail } = require('./2faEmail.js');
 const { createNotification } = require('../models/notificationModel.js');
 
+/**
+ * Updates the status of a task and notifies the task creator via email and notification.
+ * Prevents non-admin users from setting the status to "approved".
+ *
+ * @param {import('express').Request} req - The request object, expected to include `taskId` and `newStatus` in the body and the `user` in req.user.
+ * @param {import('express').Response} res - The response object used to send back HTTP responses.
+ */
 exports.updateTask = async (req, res) => {
     try {
         const taskId = req.body.taskId;
@@ -28,6 +35,13 @@ exports.updateTask = async (req, res) => {
     }
 };
 
+/**
+ * Allows an admin to approve a task.
+ * Sends a notification to the assigned user after approval.
+ *
+ * @param {import('express').Request} req - The request object, expected to include `taskId` in the body and the authenticated admin in req.user.
+ * @param {import('express').Response} res - The response object used to send back HTTP responses.
+ */
 exports.approveTask = async (req, res) => {
     try {
         // make sure the user has admin privileges before proceeding.

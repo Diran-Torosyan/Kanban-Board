@@ -1,3 +1,11 @@
+/**
+ * Task routes.
+ * 
+ * Handles fetching tasks, creating them, and deleting them.
+ * There are routes that also handle the approval process. 
+ * These routes connect to the corresponding controller methods in `tasksController.js`.
+ */
+
 const express = require("express");
 const router = express.Router();
 const {getUserTasks, makeTask, getAdminTasks, deleteTask, updateTaskStatus } = require("../controllers/taskController.js");

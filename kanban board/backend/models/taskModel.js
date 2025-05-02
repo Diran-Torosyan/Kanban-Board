@@ -1,3 +1,8 @@
+/**
+ * Task model for interacting with SQL Server task-related operations.
+ * Handles creation, retrieval, updates, and deletions of tasks and task assignments.
+ */
+
 // Make the connction to the database
 const sql = require('mssql');
 let pool;
@@ -14,7 +19,9 @@ const config = {
     }
 };
 
-// Initialize database connection
+/**
+ * Initializes the database connection pool.
+ */
 const initializePool = async () => {
     if (!pool) {
         try {
@@ -27,7 +34,11 @@ const initializePool = async () => {
     }
 };
 
-// make sure that db is connected to before querying
+
+/**
+ * Returns the database connection pool, initializing it if not already done.
+ * @returns {Promise<sql.ConnectionPool>} Database pool instance
+ */
 const getPool = async () => {
     if (!pool) await initializePool();
     return pool;
@@ -36,7 +47,11 @@ const getPool = async () => {
 // Call function to start the pool
 initializePool();
 
-// Get the a specific task by the task Id
+/**
+ * Retrieves a task by its ID.
+ * @param {number} taskId - The ID of the task to fetch.
+ * @returns {Promise<Object>} Task object.
+ */
 const fetchTaskById = async (taskId) => {
     try {
         const db = await getPool();
@@ -50,7 +65,11 @@ const fetchTaskById = async (taskId) => {
     }
 }
 
-// Get the tasks that are assigned to the user
+/**
+ * Retrieves all tasks assigned to a specific user.
+ * @param {number} userId - The ID of the user.
+ * @returns {Promise<Object[]>} List of task objects.
+ */
 const fetchTaskByUser = async (userId) => {
     try {
         const db = await getPool();
@@ -67,7 +86,11 @@ const fetchTaskByUser = async (userId) => {
     }
 }
 
-// Get the tasks that are created by the admin
+/**
+ * Retrieves all tasks created by a specific admin.
+ * @param {number} userId - The ID of the admin.
+ * @returns {Promise<Object[]>} List of task objects.
+ */
 const fetchTaskByAdmin = async (userId) => {
     try {
         const db = await getPool();
@@ -87,7 +110,12 @@ const fetchTaskByAdmin = async (userId) => {
     }
 }
 
-// Get the tasks by status and user
+/**
+ * Retrieves tasks by user ID and task status.
+ * @param {number} userId - User ID.
+ * @param {string} status - Task status (e.g., 'To Do', 'In Progress').
+ * @returns {Promise<Object[]>} List of task objects.
+ */
 const fetchTaskByUserAndStatus = async (userId, status) => {
     try {
         const db = await getPool();
@@ -102,7 +130,11 @@ const fetchTaskByUserAndStatus = async (userId, status) => {
     }
 }
 
-// Create task
+/**
+ * Creates a new task.
+ * @param {Object} task - Task object containing title, description, status, due_date, and created_by.
+ * @returns {Promise<number>} The ID of the created task.
+ */
 const createTask = async (task) => {
     try {
         const {title, description, status, due_date, created_by} = task;
@@ -126,7 +158,12 @@ const createTask = async (task) => {
 };
 
 
-// Update task
+/**
+ * Updates an existing task.
+ * @param {number} taskId - The ID of the task to update.
+ * @param {Object} changes - Updated task fields.
+ * @returns {Promise<Object>} The updated task object.
+ */
 const updateTask = async (taskId, changes) => {
     try {
         const {title, description, status, due_date, created_by} = changes;
@@ -152,7 +189,11 @@ const updateTask = async (taskId, changes) => {
     }
 };
 
-// Delete task
+/**
+ * Deletes a task by ID.
+ * @param {number} taskId - The ID of the task to delete.
+ * @returns {Promise<number>} Number of rows affected.
+ */
 const deleteTask = async (taskId) => {
     try {
         const db = await getPool();
@@ -166,7 +207,12 @@ const deleteTask = async (taskId) => {
     }
 };
 
-// Update task status
+/**
+ * Updates the status of a task.
+ * @param {number} taskId - Task ID.
+ * @param {string} newStatus - New status value.
+ * @returns {Promise<number>} Number of rows affected.
+ */
 const updateTaskStatus = async (taskId, newStatus) => {
     try {
         const db = await getPool();
@@ -181,7 +227,12 @@ const updateTaskStatus = async (taskId, newStatus) => {
     }
 };
 
-// Assign task
+/**
+ * Assigns a task to a user.
+ * @param {number} taskId - Task ID.
+ * @param {number} userId - User ID.
+ * @returns {Promise<number>} Number of rows affected.
+ */
 const assignTask = async (taskId, userId) => {
     try {
         const db = await getPool();
@@ -199,6 +250,11 @@ const assignTask = async (taskId, userId) => {
     }
 };
 
+/**
+ * Retrieves all users assigned to a task.
+ * @param {number} taskId - Task ID.
+ * @returns {Promise<Object[]>} List of user-task assignments.
+ */
 const fetchUserAssignedToTask = async (taskId) => {
     try {
         const db = await getPool();

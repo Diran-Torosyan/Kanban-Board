@@ -1,6 +1,11 @@
 const { createNotification, fetchNotificationsByUser, markNotificationAsRead, getUnreadCountByUser } = require("../models/notificationModel.js");
 const { fetchTaskById } = require("../models/taskModel.js")
 
+/**
+ * Creates a new notification for a user based on taskId, type, and message.
+ * @param {Object} req - Express request object containing taskId, type, and message in the body.
+ * @param {Object} res - Express response object to send status and result.
+ */
 exports.createNotification = async (req, res) => {
     try {
         const { taskId, type, message,} = req.body;
@@ -17,6 +22,11 @@ exports.createNotification = async (req, res) => {
       }
 };
 
+/**
+ * Retrieves all notifications for the currently authenticated user.
+ * @param {Object} req - Express request object with user object populated by authentication middleware.
+ * @param {Object} res - Express response object to return notifications.
+ */
 exports.fetchNotificationsByUser = async (req, res) => {
     try {
         const userId = req.user.id;
@@ -28,6 +38,11 @@ exports.fetchNotificationsByUser = async (req, res) => {
     }
 };
 
+/**
+ * Marks a specific notification as read.
+ * @param {Object} req - Express request object with notificationId in the body.
+ * @param {Object} res - Express response object to confirm update.
+ */
 exports.markNotificationAsRead = async (req, res) => {
     try {
         const notificationId = req.body.notificationId;
@@ -39,6 +54,11 @@ exports.markNotificationAsRead = async (req, res) => {
     }
 };
 
+/**
+ * Retrieves the count of unread notifications for the authenticated user.
+ * @param {Object} req - Express request object with user info from auth middleware.
+ * @param {Object} res - Express response object to return unread notification count.
+ */
 exports.fetchUnreadNotificationsNumByUser = async (req, res) => {
     try {
         const userId = req.user.id;

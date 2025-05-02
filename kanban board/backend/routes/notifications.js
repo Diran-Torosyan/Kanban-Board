@@ -1,3 +1,10 @@
+/**
+ * Notification routes.
+ * 
+ * Handles creating and fetching notifications. It will also get read and unread notifications.
+ * These routes connect to the corresponding controller methods in `notificationController.js`.
+ */
+
 const express = require("express");
 const router = express.Router();
 const { authenticateJWT } = require('../middleware/authenticateJWT.js');

@@ -1,6 +1,16 @@
 const jwt = require('jsonwebtoken');
 
-// function to checks to see if a valid token is provided to access the route
+/**
+ * Middleware that verifies the presence and validity of a JSON Web Token (JWT).
+ * 
+ * - Checks for a token in the `Authorization` header (format: "Bearer <token>").
+ * - If valid, attaches the decoded user payload to `req.user` and proceeds to the next middleware.
+ * - If missing or invalid, responds with 401 (Unauthorized) or 403 (Forbidden).
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express `next` middleware function.
+ */
 exports.authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
 

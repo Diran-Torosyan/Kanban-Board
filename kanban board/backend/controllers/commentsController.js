@@ -1,5 +1,11 @@
 const { getCommentByTask, addComment, updateComment, deleteComment } = require('../models/commentModel.js');
 
+/**
+ * Retrieves all comments for a specific task.
+ *
+ * @param {import('express').Request} req - Express request object, expects `taskId` in the body.
+ * @param {import('express').Response} res - Express response object.
+ */
 exports.getTaskComments = async (req, res) => {
     try {
         const taskId = req.body.taskId;
@@ -11,6 +17,12 @@ exports.getTaskComments = async (req, res) => {
     }
 };
 
+/**
+ * Retrieves the most recent comment for a task.
+ *
+ * @param {import('express').Request} req - Express request object, expects `taskId` in the body.
+ * @param {import('express').Response} res - Express response object.
+ */
 exports.getRecentComment = async (req, res) => {
     try {
         const taskId = req.body.taskId;
@@ -22,6 +34,12 @@ exports.getRecentComment = async (req, res) => {
     }
 };
 
+/**
+ * Adds a new comment to a task by the authenticated user.
+ *
+ * @param {import('express').Request} req - Express request object, expects `taskId` and `content` in the body.
+ * @param {import('express').Response} res - Express response object.
+ */
 exports.addCommentToTask = async (req, res) => {
     try {
         const taskId = req.body.taskId;
@@ -36,6 +54,12 @@ exports.addCommentToTask = async (req, res) => {
     }
 };
 
+/**
+ * Updates an existing comment's content.
+ *
+ * @param {import('express').Request} req - Express request object, expects `commentId` and `content` in the body.
+ * @param {import('express').Response} res - Express response object.
+ */
 exports.updateComment = async (req, res) => {
     try {
         const commentId = req.body.commentId;
@@ -49,6 +73,12 @@ exports.updateComment = async (req, res) => {
     }
 };
 
+/**
+ * Deletes a comment by its ID.
+ *
+ * @param {import('express').Request} req - Express request object, expects `commentId` in the body.
+ * @param {import('express').Response} res - Express response object.
+ */
 exports.removeComment = async (req, res) => {
     try {
         const commentId = req.body.commentId;

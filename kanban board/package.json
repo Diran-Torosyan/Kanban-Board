@@ -26,7 +26,8 @@
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "eject": "react-scripts eject",
+        "docs": "jsdoc -c jsdoc.json"
     },
     "eslintConfig": {
         "extends": [
@@ -51,6 +52,7 @@
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-react": "^7.30.0",
         "eslint-webpack-plugin": "^3.1.1",
+        "jsdoc": "^4.0.4",
         "prettier": "^2.7.1"
     }
 }

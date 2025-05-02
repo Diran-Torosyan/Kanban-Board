@@ -3,7 +3,14 @@ const jwt = require('jsonwebtoken');
 const { fetchUserByEmail, fetchPasswordByEmail } = require('../models/userModel');
 const { generateCode, sendCodeEmail, tempCodes } = require('./2faEmail.js');
 
-// login endpoint for validating credentials
+/**
+ * Handles user login with email and password.
+ * If credentials are valid, a 2FA code is generated and emailed to the user.
+ *
+ * @param {import('express').Request} req - Express request object, expects `email` and `password` in the body.
+ * @param {import('express').Response} res - Express response object, returns a success message or error status.
+ * @returns {Promise<void>}
+ */
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -38,7 +45,15 @@ exports.login = async (req, res) => {
   return res.json({ message: 'login successful' });
 };
 
-// Example verification endpoint (can be placed in authController or its own route file)
+
+/**
+ * Verifies the 2FA code sent to the user's email.
+ * If valid, generates and returns a JWT token.
+ *
+ * @param {import('express').Request} req - Express request object, expects `email` and `code` in the body.
+ * @param {import('express').Response} res - Express response object, returns a JWT token if successful.
+ * @returns {Promise<void>}
+ */
 exports.verifyCode = async (req, res) => {
   const { email, code } = req.body;
   

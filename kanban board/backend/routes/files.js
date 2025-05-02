@@ -1,3 +1,10 @@
+/**
+ * Files routes.
+ * 
+ * Handles uploading and downloading files.
+ * These routes connect to the corresponding controller methods in `filesController.js`.
+ */
+
 const express = require("express");
 const router = express.Router();
 const {uploadMiddleware, uploadDocument, downloadDocument, getDocumentIdForTask} = require("../controllers/filesController.js");

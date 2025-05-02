@@ -14,12 +14,19 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-//this will generate the code to send to the email
+/**
+ * Generates a 6-digit random authentication code.
+ * @returns {number} A 6-digit integer code.
+ */
 function generateCode() {
     return crypto.randomInt(100000,999999);
 }
 
-//this will send the code to the email
+/**
+ * Sends a 2FA authentication code to the email provided.
+ * @param {string} email - The recipient's email address.
+ * @param {number} Code - The 2FA code to send.
+ */
 function sendCodeEmail (email, Code) {
     const mailOptions = {
         from: 'kanbanboard491@gmail.com',
@@ -38,7 +45,12 @@ function sendCodeEmail (email, Code) {
     });
 }
 
-//this is a more general function to handle sending any kind of email
+/**
+ * Sends a generic notification email.
+ * @param {string} userEmail - The recipient's email address.
+ * @param {string} subject - The subject of the email.
+ * @param {string} emailContent - The body content of the email.
+ */
 function sendNotificationEmail (userEmail, subject, emailContent) {
     const mailOptions = {
         from: 'kanbanboard491@gmail.com',
@@ -57,6 +69,18 @@ function sendNotificationEmail (userEmail, subject, emailContent) {
     });
 };
 
+/**
+ * Generates email content when a task is assigned to a user.
+ * @param {string} username - The name of the user the task is assigned to.
+ * @param {Object} task - The task object.
+ * @param {string} task.title - The title of the task.
+ * @param {string} task.description - The description of the task.
+ * @param {string} task.due_date - The due date of the task.
+ * @param {Object} admin - The admin user assigning the task.
+ * @param {string} admin.name - The admin's name.
+ * @param {string} admin.email - The admin's email.
+ * @returns {string} Formatted email content.
+ */
 function createTaskAssignedEmail(username, task, admin) {
     return `
   Hello ${username},
@@ -75,6 +99,16 @@ function createTaskAssignedEmail(username, task, admin) {
   `;
 };
 
+/**
+ * Generates email content to notify an admin of progress updates.
+ * @param {string} adminName - The name of the admin.
+ * @param {Object} task - The task object.
+ * @param {string} task.title - Task title.
+ * @param {string} task.description - Task description.
+ * @param {string} task.due_date - Task due date.
+ * @param {string} updatedBy - The user who updated the task.
+ * @returns {string} Formatted email content.
+ */
 const createTaskProgressUpdateEmail = (adminName, task, updatedBy) => {
     return `
   Hello ${adminName},
@@ -92,6 +126,11 @@ const createTaskProgressUpdateEmail = (adminName, task, updatedBy) => {
     `;
   };
 
+  
+/**
+ * In-memory object to store temporary 2FA codes.
+ * @type {Object.<string, number>}
+ */
 const tempCodes = {};
 
 // Export the functions and tempCodes object

@@ -3,6 +3,11 @@ const { fetchUserByUserId } = require('../models/userModel.js');
 const { sendNotificationEmail, createTaskAssignedEmail } = require('./2faEmail.js');
 const { createNotification } = require('../models/notificationModel.js');
 
+/**
+ * Retrieves tasks assigned to the currently authenticated user.
+ * @param {Object} req - Express request object, containing user info in req.user.
+ * @param {Object} res - Express response object used to return task data or error.
+ */
 exports.getUserTasks = async (req, res) => {
   try {
     // get user id from the JWS token
@@ -16,6 +21,17 @@ exports.getUserTasks = async (req, res) => {
   }
 };
 
+/**
+ * Creates a new task and assigns it to specified users.
+ * Also sends email notifications and creates in-app notifications for assigned users.
+ * @param {Object} req - Express request object containing task details and assigned user IDs.
+ * @param {Object} res - Express response object indicating success or failure.
+ * @property {string} req.body.title - Title of the task.
+ * @property {string} req.body.description - Description of the task.
+ * @property {string} req.body.status - Initial status of the task (e.g., 'To Do').
+ * @property {string} req.body.due_date - Due date of the task.
+ * @property {Array<number>} req.body.assignedUsers - Array of user IDs to assign the task to.
+ */
 exports.makeTask = async (req, res) => {
   try {
     // create the task
@@ -51,6 +67,11 @@ exports.makeTask = async (req, res) => {
   }
 };
 
+/**
+ * Retrieves tasks created by the currently authenticated admin user.
+ * @param {Object} req - Express request object containing admin user info.
+ * @param {Object} res - Express response object used to return the list of tasks.
+ */
 exports.getAdminTasks = async (req, res) => {
   try {
     // get admin id from the JWS token
@@ -64,6 +85,12 @@ exports.getAdminTasks = async (req, res) => {
   }
 };
 
+/**
+ * Deletes a task from the database.
+ * @param {Object} req - Express request object containing the task ID in the body.
+ * @param {Object} res - Express response object confirming deletion or reporting an error.
+ * @property {number} req.body.taskId - ID of the task to be deleted.
+ */
 exports.deleteTask = async (req, res) => {
   try {
     //get task id from request
@@ -76,7 +103,13 @@ exports.deleteTask = async (req, res) => {
   }
 };
 
-// update the status of a task
+/**
+ * Updates the status of an existing task.
+ * @param {Object} req - Express request object containing task ID and new status.
+ * @param {Object} res - Express response object confirming the update or reporting an error.
+ * @property {number} req.body.taskId - ID of the task to be updated.
+ * @property {string} req.body.status - New status of the task.
+ */
 exports.updateTaskStatus = async (req, res) => {
   try {
     //get task id and new status from request

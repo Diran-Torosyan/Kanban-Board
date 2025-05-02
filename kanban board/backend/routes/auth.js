@@ -1,3 +1,10 @@
+/**
+ * Authentication routes.
+ * 
+ * Handles login and 2FA code verification.
+ * These routes connect to the corresponding controller methods in `authController.js`.
+ */
+
 const express = require("express");
 const router = express.Router();
 const {login, verifyCode} = require("../controllers/authController.js");

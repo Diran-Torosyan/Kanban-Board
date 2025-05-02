@@ -15,7 +15,6 @@ const storage = multer.diskStorage({
 });
 */
 
-// Multer memory storage so files end up in req.file.buffer
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 } // limit: 50MB
@@ -28,8 +27,18 @@ const containerName = 'kanbandocs';
 const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
 const containerClient = blobServiceClient.getContainerClient(containerName);
 
+/**
+ * Middleware for handling single file upload with field name 'file'.
+ * Uses in-memory storage to hold uploaded file in `req.file.buffer`.
+ */
 exports.uploadMiddleware = upload.single('file');
 
+/**
+ * Uploads a document to Azure Blob Storage and stores its metadata in the database.
+ * 
+ * @param {import('express').Request} req - Express request object containing `taskId` and file.
+ * @param {import('express').Response} res - Express response object.
+ */
 exports.uploadDocument = async (req, res) => {
   try {
     // get fields from req
@@ -57,6 +66,12 @@ exports.uploadDocument = async (req, res) => {
   }
 };
 
+/**
+ * Downloads a document from Azure Blob Storage based on the document ID.
+ * 
+ * @param {import('express').Request} req - Express request object with `documentId` in body.
+ * @param {import('express').Response} res - Express response object used to stream the file.
+ */
 exports.downloadDocument = async (req, res) => {
   try {
     const documentId = req.body.documentId;
@@ -81,6 +96,12 @@ exports.downloadDocument = async (req, res) => {
   }
 };
 
+/**
+ * Fetches the most recent document ID associated with a given task.
+ * 
+ * @param {import('express').Request} req - Express request object with `taskId` in body.
+ * @param {import('express').Response} res - Express response object.
+ */
 exports.getDocumentIdForTask = async (req, res) => {
   try {
     const taskId = req.body.taskId;

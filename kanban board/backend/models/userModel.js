@@ -1,3 +1,8 @@
+/**
+ * Module to manage user-related database operations for the Kanban Board system.
+ * This module uses Microsoft SQL Server and bcrypt for secure password hashing.
+ */
+
 // Make the connction to the database
 const sql = require('mssql');
 let pool;
@@ -17,7 +22,9 @@ const config = {
     }
 };
 
-// Initialize database connection
+/**
+ * Initialize the SQL connection pool.
+ */
 const initializePool = async () => {
     if (!pool) {
         try {
@@ -30,7 +37,10 @@ const initializePool = async () => {
     }
 };
 
-// make sure that db is connected to before querying
+/**
+ * Retrieve the current pool or initialize if needed.
+ * @returns {Promise<sql.ConnectionPool>} SQL connection pool
+ */
 const getPool = async () => {
     if (!pool) await initializePool();
     return pool;
@@ -39,7 +49,15 @@ const getPool = async () => {
 // Call function to start the pool
 initializePool();
 
-// Add a user
+/**
+ * Create a new user in the database.
+ * @param {string} username
+ * @param {string} email
+ * @param {string} password
+ * @param {string} role
+ * @param {string} department
+ * @returns {Promise<number>} User ID of newly created user
+ */
 const addUser = async (username, email, password, role, department) => {
   try {
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -62,7 +80,11 @@ const addUser = async (username, email, password, role, department) => {
   }
 };
 
-// get the user from the db by user Id
+/**
+ * Fetch user data by user ID.
+ * @param {number} userId
+ * @returns {Promise<Object>} User data
+ */
 const fetchUserByUserId = async (userId) => {
     try {
       const db = await getPool();
@@ -76,7 +98,11 @@ const fetchUserByUserId = async (userId) => {
     }
 };
 
-// get the username from the db by email
+/**
+ * Fetch user data by email.
+ * @param {string} email
+ * @returns {Promise<Object>} User data
+ */
 const fetchUserByEmail = async (email) => {
   try {
     const db = await getPool();
@@ -90,7 +116,11 @@ const fetchUserByEmail = async (email) => {
   }
 };
 
-// get the username from the db by email
+/**
+ * Fetch only username by email.
+ * @param {string} email
+ * @returns {Promise<Object>} Username
+ */
 const fetchUsernameByEmail = async (email) => {
   try {
     const db = await getPool();
@@ -104,7 +134,11 @@ const fetchUsernameByEmail = async (email) => {
   }
 };
 
-// Get the email that is assigned to the user
+/**
+ * Fetch email using user ID.
+ * @param {number} userId
+ * @returns {Promise<Object>} Email address
+ */
 const fetchEmailByUserId = async (userId) => {
     try {
       const db = await getPool();
@@ -118,7 +152,11 @@ const fetchEmailByUserId = async (userId) => {
     }
 };
 
-// Get the password of the user by their email
+/**
+ * Fetch hashed password by email.
+ * @param {string} email
+ * @returns {Promise<Object[]>} Password row
+ */
 const fetchPasswordByEmail = async (email) => {
     try {
       const db = await getPool();
@@ -132,7 +170,11 @@ const fetchPasswordByEmail = async (email) => {
     }
 };
 
-// Get the password of the user by id
+/**
+ * Fetch hashed password by user ID.
+ * @param {number} userId
+ * @returns {Promise<Object[]>} Password row
+ */
 const fetchPasswordByUserId = async (userId) => {
   try {
     const db = await getPool();
@@ -146,7 +188,11 @@ const fetchPasswordByUserId = async (userId) => {
   }
 };
 
-// Get the password of the user by id
+/**
+ * Fetch hashed password by username.
+ * @param {string} username
+ * @returns {Promise<Object[]>} Password row
+ */
 const fetchPasswordByUsername = async (username) => {
   try {
     const db = await getPool();
@@ -160,7 +206,11 @@ const fetchPasswordByUsername = async (username) => {
   }
 };
 
-// Get the userID of the user by email
+/**
+ * Fetch user ID by email.
+ * @param {string} email
+ * @returns {Promise<Object[]>} User ID
+ */
 const fetchUserID = async (email) => {
     try {
 
@@ -176,7 +226,12 @@ const fetchUserID = async (email) => {
 };
  
 
-//update email
+/**
+ * Update email of a user.
+ * @param {number} userId
+ * @param {string} newEmail
+ * @returns {Promise<boolean>} Success status
+ */
 const updateEmail = async (userId, newEmail) => {
     try {
       const db = await getPool();
@@ -195,7 +250,12 @@ const updateEmail = async (userId, newEmail) => {
 };
 
 
-//update password
+/**
+ * Update password of a user.
+ * @param {number} userId
+ * @param {string} newPassword
+ * @returns {Promise<boolean>} Success status
+ */
 const updatePassword = async (userId, newPassword) => {
   try {
     const saltRounds = 10;
@@ -213,7 +273,12 @@ const updatePassword = async (userId, newPassword) => {
   }
 };
 
-// update the role
+/**
+ * Update role of a user.
+ * @param {number} userId
+ * @param {string} newRole
+ * @returns {Promise<boolean>} Success status
+ */
 const updateRole = async (userId, newRole) => {
   /*
   const validRoles = ["admin", "user"];
@@ -237,7 +302,12 @@ const updateRole = async (userId, newRole) => {
   }
 };
 
-//update department
+/**
+ * Update department of a user.
+ * @param {number} userId
+ * @param {string} newDepartment
+ * @returns {Promise<boolean>} Success status
+ */
 const updateDepartment = async (userId, newDepartment) => {
     try {
         const db = await getPool();
@@ -252,7 +322,11 @@ const updateDepartment = async (userId, newDepartment) => {
     }
 };
 
-// remove a user
+/**
+ * Delete a user.
+ * @param {number} userId
+ * @returns {Promise<boolean>} Success status
+ */
 const deleteUser = async (userId) => {
   try {
       const db = await getPool();
@@ -267,7 +341,11 @@ const deleteUser = async (userId) => {
   }
 };
 
-// find users that match string given
+/**
+ * Search users by partial name.
+ * @param {string} username
+ * @returns {Promise<Object[]>} Matching users
+ */
 const fetchUserByName = async(username) => {
     try {
         const db = await getPool();
@@ -282,6 +360,10 @@ const fetchUserByName = async(username) => {
     }
 };
 
+/**
+ * Fetch all users from the database.
+ * @returns {Promise<Object[]>} All users
+ */
 const fetchAllUsers = async () => {
     try {
       const db = await getPool();

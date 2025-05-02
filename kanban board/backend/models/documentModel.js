@@ -1,3 +1,8 @@
+/**
+ * Document Model for managing document uploads, retrieval, and metadata in SQL Server.
+ * Handles Azure Blob Storage filename tracking and versioning.
+ */
+
 // Make the connction to the database
 const sql = require('mssql');
 let pool;
@@ -14,7 +19,9 @@ const config = {
     }
 };
 
-// Initialize database connection
+/**
+ * Initialize the database connection pool if not already initialized.
+ */
 const initializePool = async () => {
     if (!pool) {
         try {
@@ -27,7 +34,10 @@ const initializePool = async () => {
     }
 };
 
-// make sure that db is connected to before querying
+/**
+ * Ensure the pool is initialized and return the active pool.
+ * @returns {Promise<sql.ConnectionPool>}
+ */
 const getPool = async () => {
     if (!pool) await initializePool();
     return pool;
@@ -36,7 +46,15 @@ const getPool = async () => {
 // call function to start the pool
 initializePool();
 
-// upload a document
+
+/**
+ * Uploads a document record to the database with version control.
+ * @param {number} taskId - ID of the task.
+ * @param {number} userId - ID of the uploader.
+ * @param {string} filename - The name of the stored file in Azure.
+ * @param {string} originalFilename - The original name of the file uploaded.
+ * @returns {Promise<number>} The new document's ID.
+ */
 const uploadDocument = async (taskId, userId, filename, originalFilename) => {
     try {
         const db = await getPool();
@@ -78,13 +96,17 @@ const uploadDocument = async (taskId, userId, filename, originalFilename) => {
     }
 };
 
-// Retrieve all documents for a task
+/**
+ * Fetches all documents associated with a task, sorted by upload date (newest first).
+ * @param {number} taskId - Task ID to fetch documents for.
+ * @returns {Promise<Array>} List of documents.
+ */
 const fetchDocumentsByTask = async (taskId) => {
     try {
         const db = await getPool();
         const result = await db.request()
         .input("taskId", sql.Int, taskId)
-        .query("SELECT * FROM documents WHERE task_id = @taskId ORDER BY version DESC");
+        .query("SELECT * FROM documents WHERE task_id = @taskId ORDER BY uploaded_on DESC");
         return result.recordset;
     } catch (err) {
         console.error("Fetching document error: ", err);
@@ -92,8 +114,11 @@ const fetchDocumentsByTask = async (taskId) => {
     }
 };
 
-
-// Retrieve a document by ID
+/**
+ * Fetch a document using its ID.
+ * @param {number} documentId - The document ID.
+ * @returns {Promise<Object>} The document record.
+ */
 const fetchDocumentById = async (documentId) => {
     try {
         const db = await getPool();
@@ -107,7 +132,11 @@ const fetchDocumentById = async (documentId) => {
     }
 };
 
-// Delete a document
+/**
+ * Deletes a document by ID.
+ * @param {number} documentId - The document's ID to be deleted.
+ * @returns {Promise<number>} Number of rows affected.
+ */
 const deleteDocument = async (documentId) => {
     try {
         const db = await getPool();
@@ -121,7 +150,11 @@ const deleteDocument = async (documentId) => {
     }
 };
 
-// Fetch Documents Uploaded by User
+/**
+ * Fetch all documents uploaded by a specific user.
+ * @param {number} userId - The user ID.
+ * @returns {Promise<Object>} Result set of documents.
+ */
 const fetchDocumentsByUser = async (userId) => {
     try {
         const db = await getPool();
@@ -135,7 +168,14 @@ const fetchDocumentsByUser = async (userId) => {
     }
 };
 
-// Update Document
+/**
+ * Updates a document's metadata and content.
+ * Note: This function is legacy and expects binary file data.
+ * @param {number} documentId - ID of the document to update.
+ * @param {number} userId - User ID who uploads the update.
+ * @param {Buffer} file - The new binary content of the file.
+ * @returns {Promise<Object>} Updated document.
+ */
 const updateDocument = async (documentId, userId, file) => {
     try {
         const db = await getPool();

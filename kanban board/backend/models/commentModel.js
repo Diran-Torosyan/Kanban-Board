@@ -1,3 +1,8 @@
+/**
+ * Comment Model for interacting with the SQL Server database.
+ * Handles operations like adding, retrieving, updating, and deleting comments on tasks.
+ */
+
 // Make the connction to the database
 const sql = require('mssql');
 let pool;
@@ -14,7 +19,9 @@ const config = {
     }
 };
 
-// Initialize database connection
+/**
+ * Initializes the database connection pool.
+ */
 const initializePool = async () => {
     if (!pool) {
         try {
@@ -27,7 +34,13 @@ const initializePool = async () => {
     }
 };
 
-// make sure that db is connected to before querying
+
+/**
+ * Gets the active database connection pool.
+ * Ensures the pool is initialized before returning.
+ * 
+ * @returns {Promise<sql.ConnectionPool>} A connection pool instance.
+ */
 const getPool = async () => {
     if (!pool) await initializePool();
     return pool;
@@ -36,7 +49,14 @@ const getPool = async () => {
 // Call function to start the pool
 initializePool();
 
-// Add a comment
+/**
+ * Adds a new comment to a task.
+ * 
+ * @param {number} taskId - The ID of the task to comment on.
+ * @param {number} userId - The ID of the user adding the comment.
+ * @param {string} content - The comment text.
+ * @returns {Promise<number>} The ID of the inserted comment.
+ */
 const addComment = async (taskId, userId, content) => {
     try {
         const db = await getPool();
@@ -54,7 +74,12 @@ const addComment = async (taskId, userId, content) => {
     }
 };
 
-// Get all comments for a task
+/**
+ * Retrieves all comments for a specific task, ordered by creation time (newest first).
+ * 
+ * @param {number} taskId - The ID of the task.
+ * @returns {Promise<sql.IResult<any>>} The result set containing comments.
+ */
 const getCommentByTask = async (taskId) => {
     try {
         const db = await getPool();
@@ -68,7 +93,12 @@ const getCommentByTask = async (taskId) => {
     }
 };
 
-// Get all comments for a user
+/**
+ * Retrieves all comments made by a specific user.
+ * 
+ * @param {number} userId - The ID of the user.
+ * @returns {Promise<sql.IResult<any>>} The result set containing comments.
+ */
 const getCommentByUser = async (userId) => {
     try {
         const db = await getPool();
@@ -82,7 +112,13 @@ const getCommentByUser = async (userId) => {
     }
 };
 
-// Updata a comment
+/**
+ * Updates the content of an existing comment.
+ * 
+ * @param {number} commentId - The ID of the comment to update.
+ * @param {string} content - The new content of the comment.
+ * @returns {Promise<number>} Number of rows affected.
+ */
 const updateComment = async (commentId, content) => {
     try {
         const db = await getPool();
@@ -101,7 +137,12 @@ const updateComment = async (commentId, content) => {
     }
 };
 
-// Delete a comment
+/**
+ * Deletes a comment by its ID.
+ * 
+ * @param {number} commentId - The ID of the comment to delete.
+ * @returns {Promise<number>} Number of rows affected.
+ */
 const deleteComment = async (commentId) => {
     try {
         const db = await getPool();

@@ -1,3 +1,10 @@
+/**
+ * Comments routes.
+ * 
+ * Handles getting, updating, and adding comments.
+ * These routes connect to the corresponding controller methods in `commentsController.js`.
+ */
+
 const express = require("express");
 const router = express.Router();
 const { authenticateJWT } = require('../middleware/authenticateJWT.js');
